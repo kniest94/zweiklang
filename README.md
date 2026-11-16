@@ -53,6 +53,8 @@ python -m http.server 5500
 
 Hinweis: Mit einem kostenlosen GitHub-Konto funktioniert Pages nur bei **öffentlichen** Repositories.
 
+**Wichtig nach Änderungen an CSS oder JavaScript (auch `inhalte.js`):** In `index.html` (und bei CSS auch in `impressum.html`/`datenschutz.html`) die Versionsnummer hinter `?v=` erhöhen, z. B. `?v=20261117a` → `?v=20261117b`. Sonst zeigen Browser bis zu 10 Minuten (oder länger) noch die alte Fassung aus dem Zwischenspeicher.
+
 ### Später: eigene Domain zweiklang-duo.com
 
 1. Im Repo eine Datei `CNAME` mit dem Inhalt `zweiklang-duo.com` anlegen.
