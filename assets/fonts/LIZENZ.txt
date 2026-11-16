@@ -1,0 +1,14 @@
+Schriften dieser Website
+========================
+
+Besley – Copyright 2020 The Besley Project Authors (https://github.com/indestructible-type/Besley)
+Jost   – Copyright 2020 The Jost Project Authors (https://github.com/indestructible-type/Jost)
+Gochi Hand – Copyright 2011 Huerta Tipográfica (https://fonts.google.com/specimen/Gochi+Hand)
+
+Alle drei Schriften stehen unter der SIL Open Font License, Version 1.1.
+Lizenztext: https://openfontlicense.org/open-font-license-official-text/
+
+Die Dateien stammen von Fontsource (https://fontsource.org) und werden selbst gehostet,
+damit beim Seitenaufruf keine Verbindung zu Google oder anderen Drittanbietern entsteht.
+
+Icons für WhatsApp und Instagram: Simple Icons (https://simpleicons.org), CC0 1.0.

@@ -1,0 +1,11 @@
+# Rohmaterial (zu groß für GitHub, die Seite nutzt die optimierten Dateien in assets/)
+media/
+
+# Lokale Werkzeuge und Vorschaubilder
+.claude/
+vorschau/
+
+# System
+.DS_Store
+Thumbs.db
+desktop.ini
