@@ -425,13 +425,13 @@ a:hover { text-decoration-thickness: 2px; }
 }
 
 /* Bühne mit Abzügen, Fleck und Kritzeln – reagiert auf die Maus (Parallax) */
-.hero__buehne { position: relative; height: clamp(440px, 46vw, 640px); }
+.hero__buehne { position: relative; height: clamp(420px, 40vw, 560px); }
 .parallax {
   translate: calc(var(--mx, 0) * var(--tiefe, 1) * 1px) calc(var(--my, 0) * var(--tiefe, 1) * 1px);
 }
 .hero__fleck {
   position: absolute;
-  inset: 7% 3% 9% 9%;
+  inset: 4% 4% 6% 14%;
   background: var(--wein);
   border-radius: 58% 42% 55% 45% / 47% 55% 45% 53%;
   transition: translate 0.6s ease-out;
@@ -444,9 +444,9 @@ a:hover { text-decoration-thickness: 2px; }
   100% { border-radius: 52% 48% 38% 62% / 42% 60% 40% 58%; transform: rotate(-3deg); }
 }
 
-.hero__foto { position: absolute; left: 13%; top: 3%; width: 57%; }
-.hero__foto img { aspect-ratio: 4 / 5; object-fit: cover; object-position: 60% 35%; }
-.hero__clip { position: absolute; right: 5%; bottom: 2%; width: 30%; padding: 7px; cursor: pointer; }
+.hero__foto { position: absolute; left: 0; top: 9%; width: 84%; }
+.hero__foto img { aspect-ratio: 4 / 3; object-fit: cover; object-position: 50% 60%; }
+.hero__clip { position: absolute; right: 0; bottom: -2%; width: 26%; padding: 7px; cursor: pointer; }
 .hero__clip video { aspect-ratio: 9 / 16; object-fit: cover; }
 .hero__clip-play {
   position: absolute;
@@ -479,12 +479,12 @@ a:hover { text-decoration-thickness: 2px; }
 .bewegung .hero__buehne .kritzel[data-zeichnen] {
   transition: stroke-dashoffset 1.2s cubic-bezier(0.65, 0, 0.35, 1) var(--verzug, 0.2s), translate 0.5s ease-out;
 }
-.hero__notiz { position: absolute; left: 4%; bottom: 7%; rotate: -6deg; transition: translate 0.45s ease-out; }
+.hero__notiz { position: absolute; left: 8%; bottom: 0; rotate: -6deg; transition: translate 0.45s ease-out; }
 .hero__notiz-pfeil { width: 3.4rem; height: 3.4rem; margin: -0.6rem 0 0 2.2rem; rotate: -18deg; color: var(--gold); --verzug: 1.6s; }
 .hero__k1 { position: absolute; right: 2%; top: 0; width: 3.6rem; height: 3.6rem; --verzug: 1.2s; }
-.hero__k2 { position: absolute; left: 0; top: 34%; width: 2.8rem; height: 2.8rem; --verzug: 1.4s; }
+.hero__k2 { position: absolute; left: -4%; top: 2%; width: 2.8rem; height: 2.8rem; --verzug: 1.4s; }
 .hero__k3 { position: absolute; left: 40%; top: -5%; width: 3.2rem; height: 3.2rem; --verzug: 1.5s; }
-.hero__k4 { position: absolute; left: 50%; bottom: -2%; width: 2rem; height: 2rem; --verzug: 1.8s; }
+.hero__k4 { position: absolute; left: 52%; bottom: 2%; width: 2rem; height: 2rem; --verzug: 1.8s; }
 
 /* Einstieg: Text steigt, Abzüge fallen auf den Fleck */
 @keyframes steigen { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
@@ -587,7 +587,6 @@ a:hover { text-decoration-thickness: 2px; }
 .motto__wort { position: relative; display: block; }
 .motto__wort:nth-child(2) { margin-left: 11%; }
 .motto__wort:nth-child(3) { margin-left: 22%; }
-.motto__kringel { position: absolute; left: -9%; top: -14%; width: 118%; height: 128%; color: var(--puder); stroke-width: 2.5; opacity: 0.85; }
 .motto__welle { position: absolute; left: 2%; bottom: -0.14em; width: 96%; height: 0.32em; color: var(--puder); stroke-width: 2.5; opacity: 0.85; }
 .bewegung .motto--aktiv .motto__wort { color: rgba(247, 238, 239, 0.14); transition: color 0.9s var(--ease); }
 .bewegung .motto--aktiv .motto__wort.ist-an { color: var(--gold-hell); }
@@ -615,10 +614,41 @@ a:hover { text-decoration-thickness: 2px; }
 }
 .videos__kopf p { max-width: 46ch; margin: 0; color: rgba(247, 238, 239, 0.75); justify-self: end; }
 
-.videos__raster {
+.videos__filter { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: clamp(28px, 3.5vw, 48px); }
+.videos__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  padding: 0.7em 1.15em;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px rgba(247, 238, 239, 0.35);
+  color: var(--puder);
+  font: 500 1rem / 1 var(--font-text);
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, box-shadow 0.2s, transform 0.4s var(--feder);
+}
+.videos__chip:hover { box-shadow: inset 0 0 0 1.5px var(--puder); transform: translateY(-2px) rotate(-1.5deg); }
+.videos__chip[aria-pressed="true"] { background: var(--gold-hell); color: var(--keller); box-shadow: none; transform: rotate(-2deg); }
+.videos__anzahl {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: clamp(14px, 1.6vw, 24px);
+  place-items: center;
+  min-width: 1.6em;
+  height: 1.6em;
+  padding-inline: 0.3em;
+  border-radius: 999px;
+  background: rgba(247, 238, 239, 0.15);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+.videos__chip[aria-pressed="true"] .videos__anzahl { background: rgba(42, 7, 16, 0.15); }
+
+.videos__raster {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(16px, 1.8vw, 26px);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -627,6 +657,7 @@ a:hover { text-decoration-thickness: 2px; }
 /* Videos als schräge Handy-Karten – richten sich beim Drüberfahren auf und spielen stumm an */
 .video {
   position: relative;
+  width: clamp(150px, 13vw, 192px); /* 5 Videos + Instagram-Karte passen in eine Reihe */
   aspect-ratio: 9 / 16;
   overflow: hidden;
   border-radius: 18px;
@@ -637,7 +668,6 @@ a:hover { text-decoration-thickness: 2px; }
 }
 .video:hover,
 .video:focus-within { z-index: 3; rotate: 0deg; scale: 1.04; }
-.video--gross { grid-column: span 2; grid-row: span 2; aspect-ratio: auto; border-radius: 24px; }
 
 .video__knopf {
   position: absolute;
@@ -689,17 +719,6 @@ a:hover { text-decoration-thickness: 2px; }
 .video__play .icon { width: 22px; height: 22px; margin-left: 3px; }
 .video__knopf:hover .video__play { scale: 1.12; background: #fff; }
 .video.spielt-vorschau .video__play { opacity: 0.85; }
-.video--gross .video__play { width: 84px; height: 84px; }
-.video--gross .video__play .icon { width: 32px; height: 32px; }
-.video--gross .video__play::before {
-  content: "";
-  position: absolute;
-  inset: -8px;
-  border: 2px solid rgba(247, 238, 239, 0.7);
-  border-radius: 50%;
-}
-.bewegung .video--gross .video__play::before { animation: puls 2.4s ease-out infinite; }
-
 .video__info {
   position: absolute;
   left: 0;
@@ -714,8 +733,6 @@ a:hover { text-decoration-thickness: 2px; }
 }
 .video__titel { font-family: var(--font-display); font-weight: 600; font-size: 1.0625rem; line-height: 1.2; }
 .video__dauer { flex: none; font-size: 0.8125rem; font-variant-numeric: tabular-nums; color: rgba(247, 238, 239, 0.8); }
-.video--gross .video__titel { font-size: clamp(1.375rem, 1rem + 1vw, 2rem); }
-.video--gross .video__dauer { font-size: var(--fs-klein); }
 
 .video--mehr { background: var(--wein); }
 .video--mehr a {
@@ -782,7 +799,7 @@ a:hover { text-decoration-thickness: 2px; }
 
 /* --- Repertoire ---------------------------------------------------------- */
 
-.repertoire { padding-top: calc(var(--abstand) + 30px); }
+.repertoire { background: var(--papier); }
 .repertoire h2 { margin-bottom: clamp(32px, 4vw, 56px); color: var(--wein); }
 
 .rep {
@@ -827,7 +844,7 @@ a:hover { text-decoration-thickness: 2px; }
 
 /* --- Termine ------------------------------------------------------------- */
 
-.termine { background: var(--papier); }
+.termine { background: var(--puder); }
 .termine__raster {
   display: grid;
   grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
@@ -869,35 +886,22 @@ a:hover { text-decoration-thickness: 2px; }
 .termine__bild { position: sticky; top: calc(var(--kopf-h) + 40px); margin-top: 24px; }
 .termine__bild img { aspect-ratio: 4 / 5; object-fit: cover; }
 
-/* --- Instagram: Fotostapel, der sich beim Drüberfahren auffächert -------- */
+/* --- Galerie: lose verteilte Abzüge ------------------------------------- */
 
-.insta__raster {
-  display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-  gap: clamp(32px, 5vw, 80px);
-  align-items: center;
+.galerie { padding-top: calc(var(--abstand) + 30px); }
+.galerie__kopf { display: flex; flex-wrap: wrap; gap: 1.25rem 2rem; align-items: end; justify-content: space-between; }
+.galerie__kopf h2 { color: var(--wein); }
+.galerie__stern { width: 0.7em; height: 0.7em; margin-left: 0.15em; vertical-align: 0.15em; }
+.galerie__hinweis { margin: 1.25rem 0 0; text-align: right; rotate: 3deg; }
+.galerie__raster {
+  columns: 3 240px;
+  column-gap: clamp(18px, 2.4vw, 34px);
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
 }
-.insta__text h2 { margin-bottom: 1rem; color: var(--wein); }
-.insta__text p { max-width: 34ch; margin-bottom: 1.75rem; color: var(--tinte-2); }
-
-.fotostapel { position: relative; display: block; height: clamp(320px, 32vw, 440px); text-decoration: none; }
-.fotostapel:focus-visible { outline-offset: 8px; border-radius: 12px; }
-.fotostapel__bild {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 34%;
-  padding: 7px;
-  translate: calc(-50% + var(--x)) calc(-50% + var(--y));
-  transition: translate 0.65s var(--feder), rotate 0.65s var(--feder), scale 0.45s var(--feder), box-shadow 0.35s;
-}
-.fotostapel__bild img { aspect-ratio: 4 / 5; object-fit: cover; }
-.fotostapel:hover .fotostapel__bild,
-.fotostapel:focus-visible .fotostapel__bild {
-  translate: calc(-50% + var(--x) * 1.3) calc(-50% + var(--y) * 2.2);
-  rotate: calc(var(--dreh) * 1.5);
-}
-.fotostapel .fotostapel__bild:hover { rotate: 0deg; scale: 1.08; }
+.galerie__eintrag { break-inside: avoid; padding: 10px 4px clamp(18px, 2.4vw, 32px); }
+.galerie__knopf { width: 100%; cursor: zoom-in; }
 
 /* --- Anfrage ------------------------------------------------------------- */
 
@@ -1082,6 +1086,28 @@ a:hover { text-decoration-thickness: 2px; }
   box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.7);
 }
 .buehne__titel { margin: 0; font-family: var(--font-hand); font-size: 1.6rem; color: var(--puder); }
+.buehne__pfeil {
+  position: fixed;
+  top: 50%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  translate: 0 -50%;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(247, 238, 239, 0.92);
+  color: var(--wein);
+  cursor: pointer;
+  transition: scale 0.35s var(--feder), background-color 0.2s;
+}
+.buehne__pfeil:hover { scale: 1.1; background: #fff; }
+.buehne__pfeil .icon { width: 24px; height: 24px; }
+.buehne__pfeil--zurueck { left: 16px; }
+.buehne__pfeil--zurueck .icon { rotate: 180deg; }
+.buehne__pfeil--weiter { right: 16px; }
+.buehne__pfeil[hidden] { display: none; }
 .buehne__zu {
   position: fixed;
   top: 16px;
@@ -1117,11 +1143,6 @@ a:hover { text-decoration-thickness: 2px; }
 
 /* --- Responsiv ----------------------------------------------------------- */
 
-@media (max-width: 1100px) {
-  .videos__raster { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .video--mehr { grid-column: 1 / -1; aspect-ratio: auto; min-height: 150px; }
-  .video--mehr .icon { margin-bottom: 0.5rem; }
-}
 
 @media (max-width: 960px) {
   .kopf__menu { display: inline-flex; }
@@ -1152,7 +1173,6 @@ a:hover { text-decoration-thickness: 2px; }
 
   .ueber__raster,
   .termine__raster,
-  .insta__raster,
   .anfrage__form { grid-template-columns: minmax(0, 1fr); }
   .termine__bild { position: static; width: min(78%, 380px); margin: 8px auto 0; }
   .videos__kopf { grid-template-columns: minmax(0, 1fr); }
@@ -1165,7 +1185,7 @@ a:hover { text-decoration-thickness: 2px; }
 @media (max-width: 860px) {
   .hero__raster { grid-template-columns: minmax(0, 1fr); min-height: 0; padding-block: 20px 64px; }
   .hero__logo { width: min(84vw, 23rem); }
-  .hero__buehne { width: 100%; max-width: 520px; height: min(116vw, 560px); margin-inline: auto; }
+  .hero__buehne { width: 100%; max-width: 560px; height: min(92vw, 470px); margin-inline: auto; }
 }
 
 /* --- Handy --------------------------------------------------------------- */
@@ -1190,8 +1210,10 @@ a:hover { text-decoration-thickness: 2px; }
   .hero__aktionen { max-width: 22rem; }
   .hero__aktionen .btn,
   .anfrage__senden .btn { justify-content: center; }
-  .hero__foto { left: 6%; width: 64%; }
-  .hero__clip { width: 36%; right: 3%; }
+  .hero__foto { left: 0; top: 6%; width: 88%; }
+  .hero__clip { width: 32%; right: 0; }
+  .galerie__raster { columns: 2; column-gap: 12px; }
+  .galerie__eintrag { padding: 6px 2px 14px; }
   .hero__clip-play { width: 42px; height: 42px; }
   .hero__notiz { left: 2%; bottom: 3%; font-size: 1.2rem; }
   .hero__notiz-pfeil { width: 2.6rem; height: 2.6rem; margin-left: 1.6rem; }
@@ -1220,10 +1242,9 @@ a:hover { text-decoration-thickness: 2px; }
   .motto__wort:nth-child(2),
   .motto__wort:nth-child(3) { margin-left: 0; }
 
-  .videos__raster { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-  .video { rotate: calc(var(--dreh, 0deg) * 0.6); border-radius: 14px; }
-  .video--gross { grid-row: auto; aspect-ratio: 4 / 5; border-radius: 18px; }
-  .video--mehr { grid-column: auto; aspect-ratio: 9 / 16; min-height: 0; }
+  .videos__raster { gap: 14px; }
+  .video { width: calc(50% - 7px); rotate: calc(var(--dreh, 0deg) * 0.6); border-radius: 14px; }
+  .videos__chip { padding: 0.6em 0.95em; font-size: 0.9375rem; }
   .video--mehr .icon { margin-bottom: auto; }
   .video__play { width: 44px; height: 44px; }
   .video__play .icon { width: 18px; height: 18px; }
@@ -1236,9 +1257,6 @@ a:hover { text-decoration-thickness: 2px; }
   .rep__icon { grid-column: 2; grid-row: 1; }
   .termin { grid-template-columns: 4.75rem minmax(0, 1fr); gap: 1rem; }
   .termin__tag { font-size: 2.25rem; }
-
-  .fotostapel { height: 260px; }
-  .fotostapel__bild { width: 40%; translate: calc(-50% + var(--x) * 0.8) calc(-50% + var(--y)); }
 
   .anlaesse__optionen { display: flex; flex-wrap: wrap; gap: 0.5rem; }
   .anlass span {

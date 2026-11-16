@@ -11,7 +11,8 @@ Fast alles, was sich regelmäßig ändert, steht in **`assets/js/inhalte.js`**:
 |---|---|---|
 | Steckbriefe | `steckbriefe` | Bilder im Format 4:5 nach `assets/img/`. Im `alt`-Text auch den Text im Bild aufschreiben. Ohne `bild` erscheint eine „Steckbrief folgt“-Kachel. |
 | Termine | `termine` | Datum als `'JJJJ-MM-TT'`. Vergangene Termine rutschen automatisch nach „Zuletzt gespielt“. |
-| Videos | `videos` | `typ: 'mp4'` (Datei in `assets/video/`) oder `typ: 'instagram'` (Link auf ein Reel). |
+| Videos | `videos` | `gruppe: 'duo' / 'saskia' / 'nicola'` bestimmt die Auswahl-Gruppe. `typ: 'mp4'` (Datei in `assets/video/`) oder `typ: 'instagram'` (Link auf ein Reel). |
+| Galerie | `galerie` | Pro Foto eine kleine (`…-klein.webp`, ca. 640 px) und eine große Datei in `assets/img/galerie/`. |
 | Hörproben (mp3) | `hoerproben` | Dateien nach `assets/audio/`. Bereich erscheint erst, wenn die Liste nicht leer ist. |
 | Repertoire | `repertoire` | Songs als Liste, z. B. `songs: ['Titel – Interpret']`. |
 | Kontakt | `kontakt` | E-Mail, Telefon, WhatsApp-Nummer, Instagram-Name. |

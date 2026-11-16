@@ -67,15 +67,23 @@
     ziele.forEach((z) => io.observe(z));
   }
 
-  /* ---- Großansicht (Videos mit Ton, Steckbriefe zum Lesen) ------------- */
+  /* ---- Großansicht (Videos mit Ton, Steckbriefe zum Lesen, Galerie zum Blättern) ---- */
   const buehne = $('[data-buehne]');
   const buehneInhalt = $('[data-buehne-inhalt]');
   const heroLoop = $('.hero__clip video');
-  const oeffne = (html) => {
+  const pfeilZurueck = $('[data-buehne-zurueck]');
+  const pfeilWeiter = $('[data-buehne-weiter]');
+  let blaettern = null; // { liste, index } wenn eine Galerie offen ist
+  const oeffne = (html, galerie = null) => {
     if (!buehne) return;
+    blaettern = galerie;
     buehneInhalt.innerHTML = html;
-    if (typeof buehne.showModal === 'function') buehne.showModal();
-    else buehne.setAttribute('open', '');
+    if (pfeilZurueck) pfeilZurueck.hidden = !galerie;
+    if (pfeilWeiter) pfeilWeiter.hidden = !galerie;
+    if (!buehne.open) {
+      if (typeof buehne.showModal === 'function') buehne.showModal();
+      else buehne.setAttribute('open', '');
+    }
     heroLoop?.pause();
     const v = $('video', buehneInhalt);
     if (v) v.play().catch(() => {});
@@ -84,6 +92,9 @@
   buehne?.addEventListener('close', () => {
     $$('video', buehneInhalt).forEach((v) => v.pause());
     buehneInhalt.innerHTML = '';
+    blaettern = null;
+    if (pfeilZurueck) pfeilZurueck.hidden = true;
+    if (pfeilWeiter) pfeilWeiter.hidden = true;
     if (bewegung) heroLoop?.play().catch(() => {});
   });
   $('[data-buehne-zu]')?.addEventListener('click', schliesse);
@@ -92,6 +103,27 @@
     `<video src="${esc(src)}"${poster ? ` poster="${esc(poster)}"` : ''} controls playsinline autoplay></video>${titel ? `<p class="buehne__titel">${esc(titel)}</p>` : ''}`,
   );
   const zeigeBild = (src, alt) => oeffne(`<img src="${esc(src)}" alt="${esc(alt)}">`);
+  const zeigeGalerie = (liste, index) => {
+    const i = (index + liste.length) % liste.length;
+    const f = liste[i];
+    oeffne(`<img src="${esc(f.gross || f.klein)}" alt="${esc(f.alt)}"><p class="buehne__titel">${i + 1} / ${liste.length}</p>`, { liste, index: i });
+  };
+  pfeilZurueck?.addEventListener('click', () => blaettern && zeigeGalerie(blaettern.liste, blaettern.index - 1));
+  pfeilWeiter?.addEventListener('click', () => blaettern && zeigeGalerie(blaettern.liste, blaettern.index + 1));
+  buehne?.addEventListener('keydown', (e) => {
+    if (!blaettern) return;
+    if (e.key === 'ArrowLeft') zeigeGalerie(blaettern.liste, blaettern.index - 1);
+    if (e.key === 'ArrowRight') zeigeGalerie(blaettern.liste, blaettern.index + 1);
+  });
+  // Wischen auf dem Handy
+  let wischStart = null;
+  buehneInhalt?.addEventListener('pointerdown', (e) => { wischStart = e.clientX; });
+  buehneInhalt?.addEventListener('pointerup', (e) => {
+    if (!blaettern || wischStart === null) return;
+    const dx = e.clientX - wischStart;
+    wischStart = null;
+    if (Math.abs(dx) > 50) zeigeGalerie(blaettern.liste, blaettern.index + (dx < 0 ? 1 : -1));
+  });
 
   /* ---- Aufmacher: Live-Clip und Maus-Parallax --------------------------- */
   const clip = $('.hero__clip');
@@ -156,21 +188,48 @@
 
   /* ---- Videos: schräge Karten, stumme Vorschau beim Drüberfahren ------- */
   const videoListe = $('[data-videos]');
+  const videoFilter = $('[data-video-filter]');
   if (videoListe && Array.isArray(D.videos)) {
     const dreh = [-2, 1.6, -1.2, 2, -1.6, 1.2, -1, 1.8];
-    const kacheln = D.videos.map((v, i) => {
+    const gruppen = (D.videogruppen || []).filter((g) => D.videos.some((v) => v.gruppe === g.id));
+    let aktiv = gruppen[0]?.id || null;
+
+    const karte = (v, i) => {
       const info = `<span class="video__info" aria-hidden="true"><span class="video__titel">${esc(v.titel)}</span>${v.dauer ? `<span class="video__dauer">${esc(v.dauer)}</span>` : ''}</span>`;
       const poster = v.poster ? `<img src="${esc(v.poster)}" alt="" loading="lazy" decoding="async">` : '';
-      const klasse = `video${v.gross ? ' video--gross' : ''}`;
-      const stil = `style="--dreh: ${dreh[i % dreh.length]}deg; --i: ${i % 5}"`;
+      const stil = `style="--dreh: ${dreh[i % dreh.length]}deg; --i: ${i}"`;
       if (v.typ === 'instagram') {
-        return `<li class="${klasse}" data-auftritt ${stil}><a class="video__knopf" href="${esc(v.link || instaUrl)}" target="_blank" rel="noopener" aria-label="${esc(v.titel)} auf Instagram ansehen">${poster}<span class="video__play" aria-hidden="true"><svg class="icon"><use href="#i-instagram"/></svg></span>${info}</a></li>`;
+        return `<li class="video" data-auftritt ${stil}><a class="video__knopf" href="${esc(v.link || instaUrl)}" target="_blank" rel="noopener" aria-label="${esc(v.titel)} auf Instagram ansehen">${poster}<span class="video__play" aria-hidden="true"><svg class="icon"><use href="#i-instagram"/></svg></span>${info}</a></li>`;
       }
       const label = `Video abspielen: ${v.titel}${v.dauer ? `, ${v.dauer} Minuten` : ''}`;
-      return `<li class="${klasse}" data-auftritt ${stil}><button class="video__knopf" type="button" data-src="${esc(v.datei)}" data-titel="${esc(v.titel)}" data-poster="${esc(v.poster || '')}" aria-label="${esc(label)}">${poster}<span class="video__play" aria-hidden="true"><svg class="icon"><use href="#i-play"/></svg></span>${info}</button></li>`;
-    });
-    kacheln.push(`<li class="video video--mehr" data-auftritt style="--dreh: 2deg; --i: 4"><a href="${instaUrl}" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-instagram"/></svg><span class="video__mehr-titel">Mehr Live-Momente</span><span class="video__mehr-text">Neue Clips zeigen wir zuerst auf Instagram.</span></a></li>`);
-    videoListe.innerHTML = kacheln.join('');
+      return `<li class="video" data-auftritt ${stil}><button class="video__knopf" type="button" data-src="${esc(v.datei)}" data-titel="${esc(v.titel)}" data-poster="${esc(v.poster || '')}" aria-label="${esc(label)}">${poster}<span class="video__play" aria-hidden="true"><svg class="icon"><use href="#i-play"/></svg></span>${info}</button></li>`;
+    };
+
+    const zeichne = (neu) => {
+      const liste = aktiv ? D.videos.filter((v) => v.gruppe === aktiv) : D.videos;
+      const kacheln = liste.map(karte);
+      kacheln.push(`<li class="video video--mehr" data-auftritt style="--dreh: 2deg; --i: ${liste.length}"><a href="${instaUrl}" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-instagram"/></svg><span class="video__mehr-titel">Mehr Live-Momente</span><span class="video__mehr-text">Neue Clips zeigen wir zuerst auf Instagram.</span></a></li>`);
+      videoListe.innerHTML = kacheln.join('');
+      // Beim Umschalten landen die Karten sofort neu
+      if (neu && bewegung) $$('[data-auftritt]', videoListe).forEach((el) => el.classList.add('ist-sichtbar'));
+      bindeVorschau();
+    };
+
+    if (videoFilter && gruppen.length > 1) {
+      videoFilter.innerHTML = gruppen
+        .map((g) => `<button class="videos__chip" type="button" data-gruppe="${esc(g.id)}" aria-pressed="${g.id === aktiv}">${esc(g.name)}<span class="videos__anzahl">${D.videos.filter((v) => v.gruppe === g.id).length}</span></button>`)
+        .join('');
+      videoFilter.addEventListener('click', (e) => {
+        const chip = e.target.closest('[data-gruppe]');
+        if (!chip || chip.dataset.gruppe === aktiv) return;
+        aktiv = chip.dataset.gruppe;
+        $$('[data-gruppe]', videoFilter).forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+        zeichne(true);
+      });
+    } else if (videoFilter) {
+      videoFilter.hidden = true;
+      aktiv = null;
+    }
 
     videoListe.addEventListener('click', (e) => {
       const knopf = e.target.closest('button.video__knopf');
@@ -179,7 +238,8 @@
       zeigeVideo(knopf.dataset.src, knopf.dataset.titel, knopf.dataset.poster);
     });
 
-    if (feinerZeiger && bewegung) {
+    function bindeVorschau() {
+      if (!feinerZeiger || !bewegung) return;
       $$('.video', videoListe).forEach((karte) => {
         const knopf = $('button.video__knopf', karte);
         if (!knopf) return;
@@ -204,6 +264,21 @@
         });
       });
     }
+
+    zeichne(false);
+  }
+
+  /* ---- Galerie: lose verteilte Abzüge, Großansicht zum Blättern -------- */
+  const galerieBox = $('[data-galerie]');
+  if (galerieBox && Array.isArray(D.galerie) && D.galerie.length) {
+    const dreh = [-3, 2, -1.5, 3, -2.5, 1.5, -1, 2.5];
+    galerieBox.innerHTML = D.galerie
+      .map((f, i) => `<li class="galerie__eintrag" data-auftritt style="--i: ${i % 3}"><button class="print galerie__knopf${i % 4 === 1 ? ' print--band' : ''}" type="button" style="--dreh: ${dreh[i % dreh.length]}deg" data-index="${i}"><img src="${esc(f.klein)}" alt="${esc(f.alt)}" loading="lazy" decoding="async"><span class="sr-only">, vergrößern</span></button></li>`)
+      .join('');
+    galerieBox.addEventListener('click', (e) => {
+      const knopf = e.target.closest('.galerie__knopf');
+      if (knopf) zeigeGalerie(D.galerie, Number(knopf.dataset.index));
+    });
   }
 
   /* ---- Laufband: zweite Hälfte für eine nahtlose Schleife -------------- */
