@@ -1,0 +1,83 @@
+# Lokale Vorbereitung: kein externer Dienst ist damit angebunden.
+# Nur Inhalte, kein Layout und keine Medienverwaltung in Etappe 1.
+content:
+  - name: termine
+    label: Termine
+    type: file
+    path: content/termine.json
+    format: json
+    list: true
+    operations:
+      create: false
+      rename: false
+      delete: false
+    fields:
+      - name: datum
+        label: Datum
+        type: date
+        required: true
+        default: ""
+        options:
+          time: false
+          format: yyyy-MM-dd
+      - name: titel
+        label: Veranstaltung
+        type: string
+        required: true
+        pattern:
+          regex: '\S'
+          message: Bitte einen Veranstaltungstitel eingeben.
+      - name: ort
+        label: Ort
+        type: string
+        required: true
+        pattern:
+          regex: '\S'
+          message: Bitte einen Ort eingeben.
+      - name: uhrzeit
+        label: Uhrzeit (optional)
+        type: string
+        description: 'Zum Beispiel 19:30. Leer lassen, wenn die Uhrzeit noch offen ist.'
+        pattern:
+          regex: '^$|^([01]\d|2[0-3]):[0-5]\d$'
+          message: Bitte die Uhrzeit als HH:MM eingeben, zum Beispiel 19:30.
+      - name: link
+        label: Veranstaltungslink (optional)
+        type: string
+        description: Vollständige öffentliche Internetadresse, keine internen Angaben.
+        pattern:
+          regex: '^$|^https?://[^\s@\\]+$'
+          message: Bitte eine vollständige http://- oder https://-Adresse ohne Leerzeichen und Zugangsdaten eingeben.
+  - name: repertoire
+    label: Repertoire
+    type: file
+    path: content/repertoire.json
+    format: json
+    list: true
+    operations:
+      create: false
+      rename: false
+      delete: false
+    fields:
+      - name: name
+        label: Kategorie
+        type: string
+        required: true
+        pattern:
+          regex: '\S'
+          message: Bitte eine Kategorie eingeben.
+      - name: text
+        label: Beschreibung
+        type: text
+        required: true
+        pattern:
+          regex: '\S'
+          message: Bitte eine Beschreibung eingeben.
+      - name: songs
+        label: Songs
+        type: string
+        list: true
+        description: Ein Song pro Eintrag, zum Beispiel Titel – Interpret. Eine leere Songliste ist erlaubt.
+        pattern:
+          regex: '\S'
+          message: Bitte einen Songtitel eingeben oder den leeren Eintrag entfernen.

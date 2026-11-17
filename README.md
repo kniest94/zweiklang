@@ -5,16 +5,16 @@ Reines HTML, CSS und JavaScript – kein Build-Schritt, läuft direkt auf GitHub
 
 ## Inhalte pflegen
 
-Fast alles, was sich regelmäßig ändert, steht in **`assets/js/inhalte.js`**:
+Termine und Repertoire stehen ausschließlich in **`content/termine.json`** und **`content/repertoire.json`**. Anleitung und Validierungsregeln: [INHALTSPFLEGE.md](docs/INHALTSPFLEGE.md). Alle übrigen regelmäßig gepflegten Inhalte stehen weiterhin in **`assets/js/inhalte.js`**:
 
-| Was | Wo in `inhalte.js` | Hinweis |
+| Was | Datei / Feld | Hinweis |
 |---|---|---|
 | Steckbriefe | `steckbriefe` | Bilder im Format 4:5 nach `assets/img/`. Im `alt`-Text auch den Text im Bild aufschreiben. Ohne `bild` erscheint eine „Steckbrief folgt“-Kachel. |
-| Termine | `termine` | Datum als `'JJJJ-MM-TT'`. Vergangene Termine rutschen automatisch nach „Zuletzt gespielt“. |
+| Termine | `content/termine.json` | Datum als `"JJJJ-MM-TT"`. Vergangene Termine rutschen automatisch nach „Zuletzt gespielt“. |
 | Videos | `videos` | `gruppe: 'duo' / 'saskia' / 'nicola'` bestimmt die Auswahl-Gruppe. `typ: 'mp4'` (Datei in `assets/video/`) oder `typ: 'instagram'` (Link auf ein Reel). |
 | Galerie | `galerie` | Pro Foto eine kleine (`…-klein.webp`, ca. 640 px) und eine große Datei in `assets/img/galerie/`. |
 | Hörproben (mp3) | `hoerproben` | Dateien nach `assets/audio/`. Bereich erscheint erst, wenn die Liste nicht leer ist. |
-| Repertoire | `repertoire` | Songs als Liste, z. B. `songs: ['Titel – Interpret']`. |
+| Repertoire | `content/repertoire.json` | Songs als JSON-Liste, z. B. `"songs": ["Titel – Interpret"]`. |
 | Kontakt | `kontakt` | E-Mail, Telefon, WhatsApp-Nummer, Instagram-Name. |
 
 Texte wie „Über uns“ stehen direkt in `index.html`, Impressum und Datenschutz in `impressum.html` und `datenschutz.html`.
@@ -45,6 +45,8 @@ Im Projektordner einen kleinen Webserver starten und `http://localhost:5500` öf
 python -m http.server 5500
 ```
 
+Nicht per `file://` öffnen: Termine und Repertoire werden per HTTP geladen und validiert. Lokale Tests ohne Installation: `node --test`. Bei Ladefehlern zeigt nur der betroffene Bereich einen Fehler; gültige leere Listen sind davon getrennt. Es ist noch kein CMS verbunden.
+
 ## Veröffentlichen (GitHub Pages)
 
 1. Änderungen committen und auf `main` pushen.
@@ -69,6 +71,9 @@ impressum.html        Impressum
 datenschutz.html      Datenschutzerklärung
 assets/css/style.css  Gestaltung (Farben und Schriften oben als Variablen)
 assets/js/inhalte.js  Inhalte zum Selberpflegen
+assets/js/inhalt-laden.js  Ladeadapter und Validierung für Termine/Repertoire
+content/termine.json  Kanonische Termindaten
+content/repertoire.json  Kanonisches Repertoire
 assets/js/main.js     Seitenlogik (Videos, Termine, Menü, Anfrage)
 assets/img/           Logo-Varianten, Fotos, Favicon
 assets/video/         Videos (mp4) + Vorschaubilder (webp)

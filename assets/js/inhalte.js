@@ -44,30 +44,7 @@ window.ZWEIKLANG = {
     },
   ],
 
-  /*
-    TERMINE
-    Vergangene Termine rutschen automatisch nach unten in "Zuletzt gespielt".
-    Felder: datum (Pflicht), titel, ort, uhrzeit (optional), link (optional, z. B. Veranstaltungsseite)
-  */
-  termine: [
-    {
-      datum: '2026-11-14',
-      titel: 'Adventsmarkt',
-      ort: 'Ski- & Wanderhütte, Kirrberg',
-    },
-    {
-      datum: '2026-12-11',
-      titel: 'Nikolausparty',
-      ort: 'Marktgässje, Homburg',
-    },
-    {
-      datum: '2026-12-19',
-      titel: 'Weihnachtsmarkt',
-      ort: 'Blieskastel',
-    },
-    // Beispiel für einen neuen Termin (Schrägstriche entfernen, damit er erscheint):
-    // { datum: '2027-05-22', titel: 'Hochzeitsfeier', ort: 'Homburg', uhrzeit: '19:00' },
-  ],
+  // Termine: ausschließlich in content/termine.json pflegen (docs/INHALTSPFLEGE.md).
 
   /*
     VIDEOS
@@ -133,26 +110,6 @@ window.ZWEIKLANG = {
     // { titel: 'Songtitel', datei: 'assets/audio/songtitel.mp3' },
   ],
 
-  /*
-    REPERTOIRE
-    Songs als Liste eintragen, z. B. songs: ['Titel – Interpret', 'Titel – Interpret'].
-    Leere Listen werden einfach nicht angezeigt.
-  */
-  repertoire: [
-    {
-      name: 'Gefühlvolle Balladen',
-      text: 'Für die ruhigen Momente: zweistimmig gesungen und ganz nah dran.',
-      songs: [],
-    },
-    {
-      name: 'Songs zum Mitsingen',
-      text: 'Lieder, die alle kennen und bei denen jeder mitsingen kann.',
-      songs: [],
-    },
-    {
-      name: 'Rockige Klassiker',
-      text: 'Wenn es lauter werden darf: große Rock-Klassiker in unserer eigenen Fassung.',
-      songs: [],
-    },
-  ],
+  // Repertoire: ausschließlich in content/repertoire.json pflegen.
+
 };

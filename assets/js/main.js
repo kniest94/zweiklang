@@ -1,5 +1,6 @@
 /* Zweiklang – Seitenlogik. Inhalte kommen aus assets/js/inhalte.js */
 (() => {
+  const starten = () => {
   'use strict';
 
   const D = window.ZWEIKLANG || {};
@@ -299,6 +300,10 @@
 
   /* ---- Repertoire mit Kritzel-Symbolen --------------------------------- */
   const repBox = $('[data-repertoire]');
+  if (repBox && !Array.isArray(D.repertoire)) {
+    repBox.textContent = 'Repertoire konnte nicht geladen werden. Bitte versucht es später erneut.';
+    repBox.setAttribute('role', 'status');
+  }
   if (repBox && Array.isArray(D.repertoire)) {
     const symbole = ['k-herz', 'k-noten', 'k-blitz'];
     repBox.innerHTML = D.repertoire
@@ -314,7 +319,11 @@
   /* ---- Termine --------------------------------------------------------- */
   const kommendBox = $('[data-termine-kommend]');
   const vergangenListe = $('[data-termine-vergangen]');
-  if (kommendBox && vergangenListe) {
+  if (kommendBox && vergangenListe && !Array.isArray(D.termine)) {
+    kommendBox.innerHTML = '<p class="termine__leer" role="status">Termine konnten nicht geladen werden. Bitte versucht es später erneut.</p>';
+    $('[data-termine-vergangen-box]').hidden = true;
+  }
+  if (kommendBox && vergangenListe && Array.isArray(D.termine)) {
     const heute = new Date();
     heute.setHours(0, 0, 0, 0);
     const datum = (s) => {
@@ -415,4 +424,6 @@
   /* ---- Jahr in der Fußzeile ------------------------------------------- */
   const jahr = $('[data-jahr]');
   if (jahr) jahr.textContent = String(new Date().getFullYear());
+  };
+  Promise.resolve(window.ZWEIKLANG_BEREIT).then(starten);
 })();
