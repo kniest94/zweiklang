@@ -13,5 +13,12 @@
     "datum": "2026-12-19",
     "titel": "Weihnachtsmarkt",
     "ort": "Blieskastel"
+  },
+  {
+    "datum": "2026-12-24",
+    "titel": "Heilig Abend TEST",
+    "ort": "Am Roßberg 15, 66424 Homburg",
+    "uhrzeit": "18:00",
+    "link": "https://dckirrberg.de"
   }
 ]
