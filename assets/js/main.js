@@ -1,4 +1,4 @@
-/* Zweiklang – Seitenlogik. Inhalte kommen aus assets/js/inhalte.js */
+/* Zweiklang – Seitenlogik. Dynamische Inhalte kommen aus content/*.json. */
 (() => {
   const starten = () => {
   'use strict';
@@ -7,8 +7,93 @@
   const K = D.kontakt || {};
   const $ = (sel, el = document) => el.querySelector(sel);
   const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
+  /* Nur direkte Textknoten ändern: SVG, Links, Wortanimation und Leerraum bleiben.
+     Keine HTML-Eingabe aus dem CMS. Bei Ladefehler bleibt das Original-HTML. */
+  if (D.seite) {
+    const S = D.seite;
+    const felder = {
+      heroSlogan: '.hero__slogan', heroLead: '.hero__lead',
+      heroWhatsapp: '.hero__aktionen a:first-child', heroVideos: '.hero__aktionen a:nth-child(2)',
+      heroNotiz: '.hero__notiz', ueberTitel: '#ueber-titel', ueberLead: '.ueber__text .lead',
+      ueberText1: '.ueber__text p:nth-child(2)', ueberText2: '.ueber__text p:nth-child(3)',
+      ueberGruss: '.ueber__gruss', steckbriefHinweis: '.steckbriefe__hinweis',
+      motto1: '.motto__wort:nth-child(1)', motto2: '.motto__wort:nth-child(2)', motto3: '.motto__wort:nth-child(3)',
+      videosTitel: '#videos-titel', videosIntro: '.videos__kopf p', hoerprobenTitel: '.hoerproben h3',
+      galerieTitel: '#galerie-titel', galerieInstagram: '.galerie__kopf a', galerieHinweis: '.galerie__hinweis',
+      repertoireTitel: '#rep-titel', repertoireHinweis: '.repertoire__hinweis', repertoireAnfrage: '.repertoire__hinweis a',
+      termineTitel: '#termine-titel', termineKommend: '.termine__listen > .termine__zwischen',
+      termineVergangen: '[data-termine-vergangen-box] h3', terminBildunterschrift: '.termine__bild figcaption',
+      anfrageTitel: '#anfrage-titel', anfrageIntro: '.anfrage__links > p', anfrageAnlass: '.anlaesse legend',
+      anfrageDatum: 'label[for="f-datum"]', anfrageOrt: 'label[for="f-ort"]', anfrageName: 'label[for="f-name"]',
+      anfrageNachricht: 'label[for="f-nachricht"]', anfrageOptional: '.feld__optional',
+      anfrageWhatsapp: '[data-senden="whatsapp"]', anfrageMail: '[data-senden="mail"]',
+      anfrageHinweis: '.anfrage__hinweis', kontaktTitel: '#kontakt-titel',
+    };
+    Object.entries(felder).forEach(([key, selector]) => {
+      const el = $(selector);
+      const knoten = el && [...(el.childNodes || [])].find((n) => n.nodeType === 3 && n.nodeValue.trim());
+      if (knoten && knoten.nodeValue.trim() !== S.texte[key]) {
+        knoten.nodeValue = knoten.nodeValue.replace(/^(\s*)[\s\S]*?(\s*)$/, (_, vor, nach) => vor + S.texte[key] + nach);
+      }
+    });
+    const attribute = (selector, werte) => {
+      const el = $(selector);
+      if (el) Object.entries(werte).forEach(([key, value]) => el.setAttribute(key, value));
+    };
+    attribute('.hero__foto img', { src: S.hero.foto, alt: S.hero.alt });
+    attribute('.hero__clip video', { src: S.hero.vorschau, poster: S.hero.poster });
+    attribute('.hero__clip', { 'aria-label': S.hero.label });
+    const clip = $('.hero__clip');
+    if (clip) Object.assign(clip.dataset, { video: S.hero.video, titel: S.hero.titel, poster: S.hero.videoPoster });
+    attribute('.termine__bild img', { src: S.terminbild.datei, alt: S.terminbild.alt });
+  }
+  const fehler = (el, name) => {
+    if (!el) return;
+    el.textContent = `${name} konnte${name === 'Steckbriefe' || name === 'Videos' || name === 'Hörproben' || name === 'Termine' || name === 'Videogruppen' ? 'n' : ''} nicht geladen werden. Bitte versucht es später erneut.`;
+    el.setAttribute('role', 'status');
+  };
+  const bereich = (el, name, zeichnen) => {
+    try { zeichnen(); } catch { fehler(el, name); }
+  };
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-  const instaUrl = `https://www.instagram.com/${K.instagram || 'zweiklang_duo'}/`;
+  const instaUrl = K.instagram ? `https://www.instagram.com/${K.instagram}/`
+    : $('a[href^="https://www.instagram.com/"]')?.getAttribute('href') || '#kontakt';
+  const kontaktFehler = () => {
+    let status = $('[data-kontakt-status]');
+    if (!status && $('#kontakt .container')) {
+      status = document.createElement('p');
+      status.setAttribute('data-kontakt-status', '');
+      $('#kontakt .container').appendChild(status);
+    }
+    fehler(status, 'Kontakt');
+  };
+  bereich($('[data-kontakt-status]'), 'Kontakt', () => {
+    if (!D.kontakt) { kontaktFehler(); return; }
+    $$('a[href^="mailto:"]').forEach((a) => {
+      a.setAttribute('href', `mailto:${K.mail}`);
+      if (a.matches('.kontakt__wert')) a.textContent = K.mail;
+    });
+    $$('a[href^="tel:"]').forEach((a) => {
+      a.setAttribute('href', `tel:${K.telefonLink}`);
+      if (a.matches('.kontakt__wert')) a.textContent = K.telefonAnzeige;
+    });
+    $$('a[href^="https://wa.me/"]').forEach((a) => {
+      const alt = new URL(a.getAttribute('href'));
+      a.setAttribute('href', `https://wa.me/${K.whatsapp}${alt.search}${alt.hash}`);
+    });
+    $$('a[href^="https://www.instagram.com/"]').forEach((a) => {
+      a.setAttribute('href', instaUrl);
+      if (a.matches('.kontakt__wert')) a.textContent = `@${K.instagram}`;
+    });
+    $$('script[type="application/ld+json"]').forEach((script) => {
+      const seo = JSON.parse(script.textContent);
+      if (seo['@type'] !== 'MusicGroup') return;
+      seo.email = K.mail;
+      seo.telephone = K.telefonLink;
+      seo.sameAs = [instaUrl];
+      script.textContent = JSON.stringify(seo).replace(/</g, '\\u003c');
+    });
+  });
   const root = document.documentElement;
   if (!('IntersectionObserver' in window)) root.classList.remove('bewegung');
   const bewegung = root.classList.contains('bewegung');
@@ -130,7 +215,7 @@
   const clip = $('.hero__clip');
   if (clip) {
     if (!bewegung && heroLoop) { heroLoop.removeAttribute('autoplay'); heroLoop.pause(); }
-    clip.addEventListener('click', () => zeigeVideo(clip.dataset.video, clip.dataset.titel, clip.dataset.video.replace('.mp4', '.webp')));
+    clip.addEventListener('click', () => zeigeVideo(clip.dataset.video, clip.dataset.titel, clip.dataset.poster || clip.dataset.video.replace('.mp4', '.webp')));
   }
   const heroBuehne = $('.hero__buehne');
   if (hero && heroBuehne && bewegung && feinerZeiger) {
@@ -166,6 +251,8 @@
 
   /* ---- Steckbriefe als angepinnte Abzüge ------------------------------- */
   const steckBox = $('[data-steckbriefe]');
+  bereich(steckBox, 'Steckbriefe', () => {
+  if (steckBox && !Array.isArray(D.steckbriefe)) fehler(steckBox, 'Steckbriefe');
   if (steckBox && Array.isArray(D.steckbriefe)) {
     const dreh = [-5, 2.5, -3, 3.5, -2];
     steckBox.innerHTML = D.steckbriefe
@@ -187,9 +274,14 @@
     window.addEventListener('load', scrollbar);
   }
 
+  });
+
   /* ---- Videos: schräge Karten, stumme Vorschau beim Drüberfahren ------- */
   const videoListe = $('[data-videos]');
   const videoFilter = $('[data-video-filter]');
+  bereich(videoListe, 'Videos', () => {
+  if (!Array.isArray(D.videos)) fehler(videoListe, 'Videos');
+  if (!Array.isArray(D.videogruppen)) fehler(videoFilter, 'Videogruppen');
   if (videoListe && Array.isArray(D.videos)) {
     const dreh = [-2, 1.6, -1.2, 2, -1.6, 1.2, -1, 1.8];
     const gruppen = (D.videogruppen || []).filter((g) => D.videos.some((v) => v.gruppe === g.id));
@@ -216,6 +308,7 @@
       bindeVorschau();
     };
 
+    bereich(videoFilter, 'Videogruppen', () => {
     if (videoFilter && gruppen.length > 1) {
       videoFilter.innerHTML = gruppen
         .map((g) => `<button class="videos__chip" type="button" data-gruppe="${esc(g.id)}" aria-pressed="${g.id === aktiv}">${esc(g.name)}<span class="videos__anzahl">${D.videos.filter((v) => v.gruppe === g.id).length}</span></button>`)
@@ -228,9 +321,10 @@
         zeichne(true);
       });
     } else if (videoFilter) {
-      videoFilter.hidden = true;
+      videoFilter.hidden = Array.isArray(D.videogruppen);
       aktiv = null;
     }
+    });
 
     videoListe.addEventListener('click', (e) => {
       const knopf = e.target.closest('button.video__knopf');
@@ -269,17 +363,30 @@
     zeichne(false);
   }
 
+  });
+
   /* ---- Galerie: lose verteilte Abzüge, Großansicht zum Blättern -------- */
   const galerieBox = $('[data-galerie]');
+  const galerieFehler = () => {
+    if (!galerieBox) return;
+    galerieBox.textContent = 'Galerie konnte nicht geladen werden. Bitte versucht es später erneut.';
+    galerieBox.setAttribute('role', 'status');
+  };
+  try {
+  if (galerieBox && !Array.isArray(D.galerie)) galerieFehler();
   if (galerieBox && Array.isArray(D.galerie) && D.galerie.length) {
     const dreh = [-3, 2, -1.5, 3, -2.5, 1.5, -1, 2.5];
     galerieBox.innerHTML = D.galerie
-      .map((f, i) => `<li class="galerie__eintrag" data-auftritt style="--i: ${i % 3}"><button class="print galerie__knopf${i % 4 === 1 ? ' print--band' : ''}" type="button" style="--dreh: ${dreh[i % dreh.length]}deg" data-index="${i}"><img src="${esc(f.klein)}" alt="${esc(f.alt)}" loading="lazy" decoding="async"><span class="sr-only">, vergrößern</span></button></li>`)
+      .map((f, i) => `<li class="galerie__eintrag" data-auftritt style="--i: ${i % 3}"><button class="print galerie__knopf${i % 4 === 1 ? ' print--band' : ''}" type="button" style="--dreh: ${dreh[i % dreh.length]}deg" data-index="${i}"><img src="${esc(f.klein || f.gross)}" alt="${esc(f.alt)}" loading="lazy" decoding="async"><span class="sr-only">, vergrößern</span></button></li>`)
       .join('');
     galerieBox.addEventListener('click', (e) => {
       const knopf = e.target.closest('.galerie__knopf');
       if (knopf) zeigeGalerie(D.galerie, Number(knopf.dataset.index));
     });
+  }
+
+  } catch {
+    galerieFehler();
   }
 
   /* ---- Laufband: zweite Hälfte für eine nahtlose Schleife -------------- */
@@ -291,15 +398,24 @@
 
   /* ---- Hörproben ------------------------------------------------------- */
   const hoerBox = $('[data-hoerproben]');
+  bereich($('[data-hoerproben-liste]', hoerBox || document), 'Hörproben', () => {
+  if (hoerBox && !Array.isArray(D.hoerproben)) {
+    hoerBox.hidden = false;
+    fehler($('[data-hoerproben-liste]', hoerBox), 'Hörproben');
+  }
   if (hoerBox && Array.isArray(D.hoerproben) && D.hoerproben.length) {
+    hoerBox.hidden = false;
     $('[data-hoerproben-liste]', hoerBox).innerHTML = D.hoerproben
       .map((h) => `<li><span>${esc(h.titel)}</span><audio controls preload="none" src="${esc(h.datei)}"></audio></li>`)
       .join('');
     hoerBox.hidden = false;
   }
 
+  });
+
   /* ---- Repertoire mit Kritzel-Symbolen --------------------------------- */
   const repBox = $('[data-repertoire]');
+  bereich(repBox, 'Repertoire', () => {
   if (repBox && !Array.isArray(D.repertoire)) {
     repBox.textContent = 'Repertoire konnte nicht geladen werden. Bitte versucht es später erneut.';
     repBox.setAttribute('role', 'status');
@@ -316,9 +432,12 @@
       .join('');
   }
 
+  });
+
   /* ---- Termine --------------------------------------------------------- */
   const kommendBox = $('[data-termine-kommend]');
   const vergangenListe = $('[data-termine-vergangen]');
+  bereich(kommendBox, 'Termine', () => {
   if (kommendBox && vergangenListe && !Array.isArray(D.termine)) {
     kommendBox.innerHTML = '<p class="termine__leer" role="status">Termine konnten nicht geladen werden. Bitte versucht es später erneut.</p>';
     $('[data-termine-vergangen-box]').hidden = true;
@@ -346,6 +465,8 @@
     if (vergangen.length) vergangenListe.innerHTML = vergangen.slice(0, 6).map(zeile).join('');
     else $('[data-termine-vergangen-box]').hidden = true;
   }
+
+  });
 
   /* ---- Anfrage: Nachricht zusammenstellen, Herzchen beim Auswählen ---- */
   const form = $('[data-anfrage]');
@@ -401,6 +522,7 @@
     form.addEventListener('click', (e) => {
       const knopf = e.target.closest('[data-senden]');
       if (!knopf) return;
+      if (!D.kontakt) { kontaktFehler(); return; }
       const { text, betreff } = nachrichtBauen();
       if (knopf.dataset.senden === 'whatsapp') {
         window.open(`https://wa.me/${K.whatsapp}?text=${encodeURIComponent(text)}`, '_blank', 'noopener');

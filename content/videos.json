@@ -1,0 +1,13 @@
+[
+  { "gruppe": "duo", "typ": "mp4", "titel": "Zu zweit auf der Bühne", "datei": "assets/video/duo-buehne.mp4", "poster": "assets/video/duo-buehne.webp", "dauer": "0:42" },
+  { "gruppe": "duo", "typ": "mp4", "titel": "Open Air mit Gitarren", "datei": "assets/video/duo-openair.mp4", "poster": "assets/video/duo-openair.webp", "dauer": "0:30" },
+  { "gruppe": "duo", "typ": "mp4", "titel": "Adventsmarkt Kirrberg", "datei": "assets/video/duo-kirrberg-quer.mp4", "poster": "assets/video/duo-kirrberg-quer.webp", "dauer": "1:28" },
+  { "gruppe": "duo", "typ": "mp4", "titel": "Abendstimmung in Kirrberg", "datei": "assets/video/duo-kirrberg-1.mp4", "poster": "assets/video/duo-kirrberg-1.webp", "dauer": "0:28" },
+  { "gruppe": "duo", "typ": "mp4", "titel": "Vor der Hütte", "datei": "assets/video/duo-kirrberg-3.mp4", "poster": "assets/video/duo-kirrberg-3.webp", "dauer": "0:41" },
+  { "gruppe": "saskia", "typ": "mp4", "titel": "Saskia auf der Bühne", "datei": "assets/video/saskia-buehne.mp4", "poster": "assets/video/saskia-buehne.webp", "dauer": "0:44" },
+  { "gruppe": "saskia", "typ": "mp4", "titel": "Saskia live", "datei": "assets/video/saskia-party.mp4", "poster": "assets/video/saskia-party.webp", "dauer": "0:11" },
+  { "gruppe": "saskia", "typ": "mp4", "titel": "Saskia in Kirrberg", "datei": "assets/video/saskia-solo.mp4", "poster": "assets/video/saskia-solo.webp", "dauer": "0:34" },
+  { "gruppe": "nicola", "typ": "mp4", "titel": "Nicola in Kirrberg", "datei": "assets/video/nicola-solo-1.mp4", "poster": "assets/video/nicola-solo-1.webp", "dauer": "0:21" },
+  { "gruppe": "nicola", "typ": "mp4", "titel": "Nicola im Herbstlicht", "datei": "assets/video/nicola-solo-4.mp4", "poster": "assets/video/nicola-solo-4.webp", "dauer": "0:25" },
+  { "gruppe": "nicola", "typ": "mp4", "titel": "Nicola am Mikro", "datei": "assets/video/nicola-solo-3.mp4", "poster": "assets/video/nicola-solo-3.webp", "dauer": "0:09" }
+]

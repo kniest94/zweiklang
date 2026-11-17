@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Saskia",
+    "bild": "assets/img/steckbrief-saskia.webp",
+    "alt": "Steckbrief Saskia: Saskia lächelt in die Kamera, hinter ihr Lichterketten und orangefarbene Ballons. Notizen im Bild: Baujahr 96, gibt zu viel Geld für Urlaube aus, Optimist, lieber Bier statt Blumen, Cat Mom, begnadete Zahnlücken-Pfeiferin, Chefkoch."
+  },
+  {
+    "name": "Saskia & Nicola",
+    "bild": "assets/img/steckbrief-duo.webp",
+    "alt": "Saskia und Nicola singen gemeinsam. Text im Bild: „a bit about us! – Wir sind Zweiklang! Wir sind Saskia & Nicola, zwei Musiker, die ihre Leidenschaft für ehrliche, handgemachte Musik teilen. Mal gefühlvoll und leise, mal laut und voller Energie. Wir interpretieren Songs auf unsere ganz eigene Art – mit zwei Stimmen, Gitarren und jeder Menge Herzblut.“"
+  },
+  {
+    "name": "Nicola",
+    "bild": "assets/img/steckbrief-nicola.webp",
+    "alt": "Steckbrief Nicola: Nicola singt im dunklen Anzug mit Sonnenbrille. Notizen im Bild: Baujahr 94, Cat Dad, begnadeter Pokémon-Trainer, zweite Heimat: Sauna, Erzfeind: Türrahmen, immer am Lachen, leidenschaftlicher Dartsspieler."
+  }
+]

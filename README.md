@@ -1,92 +1,42 @@
-# Zweiklang – Website
+# Zweiklang – Website und Inhaltspflege
 
-Homepage des Duos **Zweiklang** (Saskia & Nicola, Saarland).
-Reines HTML, CSS und JavaScript – kein Build-Schritt, läuft direkt auf GitHub Pages.
+Statische Website des Duos Zweiklang, Saskia und Nicola. HTML, CSS und JavaScript ohne Framework oder Build-Schritt; Hosting auf GitHub Pages.
 
-## Inhalte pflegen
+## Inhalte bearbeiten
 
-Termine und Repertoire stehen ausschließlich in **`content/termine.json`** und **`content/repertoire.json`**. Anleitung und Validierungsregeln: [INHALTSPFLEGE.md](docs/INHALTSPFLEGE.md). Alle übrigen regelmäßig gepflegten Inhalte stehen weiterhin in **`assets/js/inhalte.js`**:
+Im Browser Pages CMS öffnen, `zweiklang` auswählen und auf **main** arbeiten. Jeder Speichervorgang wird nach der GitHub-Pages-Bereitstellung öffentlich. Der frühere Testbranch wurde auf Nutzerwunsch gelöscht. Die abgenommene Optik bleibt unverändert.
 
-| Was | Datei / Feld | Hinweis |
-|---|---|---|
-| Steckbriefe | `steckbriefe` | Bilder im Format 4:5 nach `assets/img/`. Im `alt`-Text auch den Text im Bild aufschreiben. Ohne `bild` erscheint eine „Steckbrief folgt“-Kachel. |
-| Termine | `content/termine.json` | Datum als `"JJJJ-MM-TT"`. Vergangene Termine rutschen automatisch nach „Zuletzt gespielt“. |
-| Videos | `videos` | `gruppe: 'duo' / 'saskia' / 'nicola'` bestimmt die Auswahl-Gruppe. `typ: 'mp4'` (Datei in `assets/video/`) oder `typ: 'instagram'` (Link auf ein Reel). |
-| Galerie | `galerie` | Pro Foto eine kleine (`…-klein.webp`, ca. 640 px) und eine große Datei in `assets/img/galerie/`. |
-| Hörproben (mp3) | `hoerproben` | Dateien nach `assets/audio/`. Bereich erscheint erst, wenn die Liste nicht leer ist. |
-| Repertoire | `content/repertoire.json` | Songs als JSON-Liste, z. B. `"songs": ["Titel – Interpret"]`. |
-| Kontakt | `kontakt` | E-Mail, Telefon, WhatsApp-Nummer, Instagram-Name. |
+Formulare: Termine, Repertoire, Galerie, Videos, Videogruppen, Steckbriefe, Hörproben, Kontakt sowie Seitentexte/Aufmacher. Bilder, MP4 und MP3 können über benannte Medienquellen ausgewählt/hochgeladen werden. Impressum und Datenschutz haben getrennte erweiterte HTML-Editoren; dort nur Text ändern und keine HTML-Struktur bearbeiten.
 
-Texte wie „Über uns“ stehen direkt in `index.html`, Impressum und Datenschutz in `impressum.html` und `datenschutz.html`.
-
-## Neues Video hinzufügen
-
-1. Video web-tauglich machen (Handy-Videos sind oft riesig). Mit [ffmpeg](https://ffmpeg.org):
-
-   ```bash
-   ffmpeg -i mein-video.mp4 -vf "scale=720:-2" -c:v libx264 -preset slow -crf 25 -c:a aac -b:a 112k -movflags +faststart assets/video/neuer-name.mp4
-   ```
-
-2. Vorschaubild (Standbild nach 3 Sekunden) erzeugen:
-
-   ```bash
-   ffmpeg -ss 3 -i assets/video/neuer-name.mp4 -frames:v 1 -c:v libwebp -quality 80 assets/video/neuer-name.webp
-   ```
-
-3. In `assets/js/inhalte.js` unter `videos` einen Eintrag ergänzen.
-
-GitHub erlaubt maximal 100 MB pro Datei – besser unter 25 MB bleiben.
-
-## Lokal ansehen
-
-Im Projektordner einen kleinen Webserver starten und `http://localhost:5500` öffnen:
-
-```bash
-python -m http.server 5500
-```
-
-Nicht per `file://` öffnen: Termine und Repertoire werden per HTTP geladen und validiert. Lokale Tests ohne Installation: `node --test`. Bei Ladefehlern zeigt nur der betroffene Bereich einen Fehler; gültige leere Listen sind davon getrennt. Es ist noch kein CMS verbunden.
-
-## Veröffentlichen (GitHub Pages)
-
-1. Änderungen committen und auf `main` pushen.
-2. Einmalig auf GitHub: **Settings → Pages → Build and deployment → Deploy from a branch → `main` / `(root)`**.
-3. Die Seite erscheint unter `https://kniest94.github.io/zweiklang/`.
-
-Hinweis: Mit einem kostenlosen GitHub-Konto funktioniert Pages nur bei **öffentlichen** Repositories.
-
-**Wichtig nach Änderungen an CSS oder JavaScript (auch `inhalte.js`):** In `index.html` (und bei CSS auch in `impressum.html`/`datenschutz.html`) die Versionsnummer hinter `?v=` erhöhen, z. B. `?v=20261117a` → `?v=20261117b`. Sonst zeigen Browser bis zu 10 Minuten (oder länger) noch die alte Fassung aus dem Zwischenspeicher.
-
-### Später: eigene Domain zweiklang-duo.com
-
-1. Im Repo eine Datei `CNAME` mit dem Inhalt `zweiklang-duo.com` anlegen.
-2. Beim Domain-Anbieter die DNS-Einträge setzen (A-Records auf GitHub Pages, `www` als CNAME auf `kniest94.github.io`) – siehe [GitHub-Doku](https://docs.github.com/de/pages/configuring-a-custom-domain-for-your-github-pages-site).
-3. In `index.html` die Adresse bei `og:image` anpassen.
+Die ausführliche kurze Pflegeanleitung einschließlich Mediengrenzen, Veröffentlichung und Fehlerbehandlung steht in [docs/INHALTSPFLEGE.md](docs/INHALTSPFLEGE.md).
 
 ## Aufbau
 
+- `.pages.yml`: CMS-Formulare und Medienquellen.
+- `content/*.json`: neun Inhaltsdateien, keine zweite manuell gepflegte JavaScript-Kopie.
+- `assets/js/inhalte.js`: kompatible Initialisierung, keine Inhaltsdaten.
+- `assets/js/inhalt-laden.js`: unabhängiges Laden, Validieren und Zeitlimits.
+- `assets/js/main.js`: Seitendarstellung und Interaktion.
+- `index.html`: unveränderte HTML-Gestaltung und Fallbacktexte.
+- `impressum.html`, `datenschutz.html`: unveränderte rechtliche Seiten.
+- `assets/css/`, `assets/fonts/`, `Logo/`: abgenommene Gestaltung, Schriften und Logos.
+- `assets/img/`, `assets/video/`, `assets/audio/`: öffentlich verwendete Medien.
+
+## Lokal prüfen
+
+```sh
+node --test
+python3 -m http.server 5500 --bind 127.0.0.1
 ```
-index.html            Startseite
-impressum.html        Impressum
-datenschutz.html      Datenschutzerklärung
-assets/css/style.css  Gestaltung (Farben und Schriften oben als Variablen)
-assets/js/inhalte.js  Inhalte zum Selberpflegen
-assets/js/inhalt-laden.js  Ladeadapter und Validierung für Termine/Repertoire
-content/termine.json  Kanonische Termindaten
-content/repertoire.json  Kanonisches Repertoire
-assets/js/main.js     Seitenlogik (Videos, Termine, Menü, Anfrage)
-assets/img/           Logo-Varianten, Fotos, Favicon
-assets/video/         Videos (mp4) + Vorschaubilder (webp)
-assets/fonts/         Besley + Jost, selbst gehostet (siehe LIZENZ.txt)
-Logo/                 Original-Logo (SVG, PDF)
-media/                Rohmaterial – wird nicht hochgeladen (.gitignore)
-```
+
+Danach `http://localhost:5500/` öffnen; nicht per `file://`. Die HTML-Vertragstests benötigen Python 3 zusätzlich zu Node, jeweils ohne externe Pakete.
+
+Nur auf main veröffentlichen. Vor technischen Änderungen eine geprüfte Sicherung anlegen. Änderungen zunächst lokal prüfen; keine direkte Änderung der Live-Dateien ohne Tests. Normale redaktionelle JSON-Änderungen benötigen keine neue `?v=`-Kennung. Bei Änderungen an JavaScript/CSS die Skript-/Stylesheet-Versionen in den einbindenden HTML-Seiten aktualisieren.
+
+## Medienhinweise
+
+Keine automatische Konvertierung von Handyvideos: webtaugliche MP4 mit H.264/AAC verwenden, möglichst unter 25 MB. Poster separat hinzufügen. Galerie braucht nur ein Bild plus Alttext, eine kleine Vorschau ist optional. Bilder JPG/JPEG/PNG/WebP; Hörproben MP3. Inhalte und Nutzungsrechte vor Veröffentlichung prüfen. Nicht mehr benötigte Mediendateien erst nach Referenzprüfung löschen.
 
 ## Gestaltung
 
-- Farben aus dem Logo: Weinrot `#840026`, Gold `#b58022`, dazu Puder `#f7eeef` und Keller `#2a0710`.
-- Überschriften in **Besley** (Clarendon-Stil, wie alte Konzertplakate), Fließtext in **Jost**, Notizen in **Gochi Hand** (Handschrift wie in den Instagram-Steckbriefen).
-- Verspielt: Fotos als Abzüge mit Klebeband, handgezeichnete Kritzel (Sterne, Herzen, Pfeile), die sich beim Scrollen zeichnen, Laufband, Wellen zwischen den Bereichen.
-- Das Logo im Aufmacher (`assets/img/logo-animiert.svg`) ist das Original-Logo in Originalfarben, das sich beim Laden aufbaut. Das unbewegte Original liegt als `assets/img/logo.svg` daneben.
-- Wer im Betriebssystem „Bewegung reduzieren“ eingestellt hat, sieht die Seite ohne Animationen.
-- Keine Cookies, kein Tracking, keine externen Einbindungen – Schriften und Videos liegen im Repo.
+Weinrot `#840026`, Gold `#b58022`, Puder `#f7eeef`, dunkle Flächen; Besley/Jost/Gochi Hand, Fotoabzüge mit Klebeband, Kritzel, Wellen und Animationen. Dieses Design ist final abgenommen und wurde beim CMS-Ausbau nicht verändert. Schriften und Videos bleiben selbst gehostet; reduzierte Bewegung wird berücksichtigt.

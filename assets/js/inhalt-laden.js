@@ -1,4 +1,4 @@
-/* Lädt ausschließlich Termine und Repertoire; kein Framework und kein Build nötig. */
+/* Lädt neun unabhängige Inhaltsdateien; kein Framework und kein Build nötig. */
 (() => {
   'use strict';
   const basis = new URL('../../content/', document.currentScript.src);
@@ -20,17 +20,57 @@
     } catch { return false; }
   };
   const optional = (v, pruefung) => v === undefined || v === '' || pruefung(v);
-  const valide = (name, data) => Array.isArray(data) && data.every((eintrag) => {
+  // Nur lokale Rasterbilder unter assets/img; keine URL-, Encoding- oder Traversal-Tricks.
+  const bildpfad = (s) => typeof s === 'string'
+    && /^assets\/img\/(?:[a-z0-9_-]+\/)*[a-z0-9_-][a-z0-9_.-]*\.(?:webp|png|jpe?g|gif|avif)$/i.test(s);
+  const medienpfad = (s, ordner, endungen) => typeof s === 'string'
+    && new RegExp(`^assets/${ordner}/(?:[a-z0-9_-]+/)*[a-z0-9_-][a-z0-9_.-]*\\.(?:${endungen})$`, 'i').test(s);
+  const id = (s) => typeof s === 'string' && /^[a-z0-9_-]+$/.test(s);
+  const valide = (name, data) => {
+    if (name === 'seite') {
+      const keys = 'heroSlogan heroLead heroWhatsapp heroVideos heroNotiz ueberTitel ueberLead ueberText1 ueberText2 ueberGruss steckbriefHinweis motto1 motto2 motto3 videosTitel videosIntro hoerprobenTitel galerieTitel galerieInstagram galerieHinweis repertoireTitel repertoireHinweis repertoireAnfrage termineTitel termineKommend termineVergangen terminBildunterschrift anfrageTitel anfrageIntro anfrageAnlass anfrageDatum anfrageOrt anfrageName anfrageNachricht anfrageOptional anfrageWhatsapp anfrageMail anfrageHinweis kontaktTitel'.split(' ');
+      return objekt(data) && objekt(data.texte) && keys.every((key) => text(data.texte[key]))
+        && objekt(data.hero) && bildpfad(data.hero.foto) && text(data.hero.alt)
+        && ['video', 'vorschau'].every((key) => medienpfad(data.hero[key], 'video', 'mp4'))
+        && ['poster', 'videoPoster'].every((key) => medienpfad(data.hero[key], 'video', 'jpg|jpeg|png|webp'))
+        && text(data.hero.titel) && text(data.hero.label)
+        && objekt(data.terminbild) && bildpfad(data.terminbild.datei) && text(data.terminbild.alt);
+    }
+    if (name === 'kontakt') return objekt(data)
+      && typeof data.mail === 'string' && /^[a-z0-9.!#$%&'*+/=_`{|}~-]+@[a-z0-9-]+(?:\.[a-z0-9-]+)+$/i.test(data.mail)
+      && text(data.telefonAnzeige) && /^[+\d][\d *()-]*$/.test(data.telefonAnzeige)
+      // Maskierte Bestandswerte bleiben wörtlich erhalten; keine Nummer ableiten.
+      && typeof data.telefonLink === 'string' && /^\+?[\d*][\d* ()-]*$/.test(data.telefonLink)
+      && typeof data.whatsapp === 'string' && /^\d{6,15}$/.test(data.whatsapp)
+      && typeof data.instagram === 'string' && /^[a-z0-9_][a-z0-9_.]{0,29}$/i.test(data.instagram);
+    if (!Array.isArray(data)) return false;
+    if (name === 'videogruppen' && new Set(data.map((g) => g?.id)).size !== data.length) return false;
+    return data.every((eintrag) => {
     if (!objekt(eintrag)) return false;
+    if (name === 'galerie') {
+      return bildpfad(eintrag.gross) && optional(eintrag.klein, bildpfad) && text(eintrag.alt);
+    }
     if (name === 'termine') {
       return datum(eintrag.datum) && text(eintrag.titel) && text(eintrag.ort)
         && optional(eintrag.uhrzeit, (s) => typeof s === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(s))
         && optional(eintrag.link, url);
     }
+    if (name === 'videogruppen') return id(eintrag.id) && text(eintrag.name);
+    if (name === 'steckbriefe') return text(eintrag.name) && optional(eintrag.bild, bildpfad)
+      && (eintrag.bild ? text(eintrag.alt) : optional(eintrag.alt, text));
+    if (name === 'hoerproben') return text(eintrag.titel) && medienpfad(eintrag.datei, 'audio', 'mp3');
+    if (name === 'videos') return id(eintrag.gruppe) && text(eintrag.titel)
+      && optional(eintrag.dauer, (s) => typeof s === 'string' && /^\d+:[0-5]\d$/.test(s))
+      && optional(eintrag.poster, (s) => bildpfad(s) || medienpfad(s, 'video', 'webp|png|jpe?g'))
+      && (eintrag.typ === 'mp4' ? medienpfad(eintrag.datei, 'video', 'mp4')
+        : eintrag.typ === 'instagram' && url(eintrag.link)
+          && new URL(eintrag.link).protocol === 'https:'
+          && ['instagram.com', 'www.instagram.com'].includes(new URL(eintrag.link).hostname));
     return text(eintrag.name) && text(eintrag.text) && Array.isArray(eintrag.songs) && eintrag.songs.every(text);
-  });
+    });
+  };
   window.ZWEIKLANG = window.ZWEIKLANG || {};
-  window.ZWEIKLANG_BEREIT = Promise.all(['termine', 'repertoire'].map(async (name) => {
+  window.ZWEIKLANG_BEREIT = Promise.all(['termine', 'repertoire', 'galerie', 'videos', 'videogruppen', 'steckbriefe', 'hoerproben', 'kontakt', 'seite'].map(async (name) => {
     // Kein Fallback auf alte/erfundene Daten; jeder Bereich wird unabhängig geladen.
     delete window.ZWEIKLANG[name];
     const controller = new AbortController();
@@ -56,5 +96,10 @@
     } finally {
       clearTimeout(timer);
     }
-  }));
+  })).then(() => {
+    const D = window.ZWEIKLANG;
+    // Nur bei gültiger Gruppenquelle Referenzen prüfen. Bei deren Ausfall bleiben
+    // sichere Videos ungefiltert nutzbar, statt den Nachbarbereich mitzureißen.
+    if (D.videogruppen && D.videos?.some((v) => !D.videogruppen.some((g) => g.id === v.gruppe))) delete D.videos;
+  });
 })();

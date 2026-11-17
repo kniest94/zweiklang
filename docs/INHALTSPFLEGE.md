@@ -1,43 +1,53 @@
-# Inhaltspflege – erste lokale Etappe
+# Zweiklang – Inhalte vom Handy pflegen
 
-## Kanonische Dateien
+## Einstieg
 
-- `content/termine.json`: Termine als JSON-Liste, ursprüngliche Daten unverändert übernommen.
-- `content/repertoire.json`: Repertoiregruppen als JSON-Liste, ursprüngliche Daten unverändert übernommen.
-- Alle anderen Inhalte bleiben in `assets/js/inhalte.js` beziehungsweise im bisherigen HTML.
+Pages CMS im Browser öffnen, Projekt **zweiklang**, Branch **main**. Speichern schreibt direkt nach GitHub; nach der GitHub-Pages-Bereitstellung ist die Änderung öffentlich. Es gibt keinen Testbranch mehr. Keine zweite Freigabe erforderlich. Den zweiten Benutzer richten wir später ein.
 
-Termine/Repertoire nicht zusätzlich in JavaScript pflegen. JSON benötigt doppelte Anführungszeichen; keine Kommentare oder abschließenden Kommas.
+## Verfügbare Bereiche
 
-### Termine
+- **Termine:** Datum, Veranstaltung, Ort, optionale Uhrzeit und Link.
+- **Repertoire:** Kategorien, Beschreibung, Songs.
+- **Galerie:** Bild auswählen/hochladen, Alttext, Reihenfolge. Ein Bild genügt; eine kleine Vorschau ist optional.
+- **Videos:** Gruppe, MP4 oder Instagram-Link, Titel, optionales Vorschaubild und Dauer.
+- **Videogruppen:** Anzeigenamen und eindeutige IDs. IDs müssen zu den Videos passen; bestehende IDs nicht unnötig ändern.
+- **Steckbriefe:** Namen, Bilder, Bildbeschreibung. Im Alttext auch Text beschreiben, der im Steckbriefbild steht. Bildformat 4:5 empfohlen.
+- **Hörproben:** MP3-Datei und Titel. Ohne Einträge bleibt der Bereich verborgen.
+- **Kontakt:** E-Mail, sichtbare Telefonnummer, Telefonlink, WhatsApp und Instagram. Sichtbare Startseitenlinks, Anfragewege und MusicGroup-JSON-LD folgen diesen Angaben. Die vorhandene maskierte Telefonlinknummer wurde nicht eigenmächtig geändert. Kontaktangaben in Rechtstexten weiterhin gesondert kontrollieren.
+- **Seitentexte und Aufmacher:** Überschriften, Einleitungen, Über-uns-Texte, Motto, Hinweise, Anfragebeschriftungen sowie Hero-Foto/-Clip und Terminfoto. Nur Text, kein HTML. Gestaltung und SVG-Kritzel bleiben im Code.
+- **Impressum / Datenschutz:** Erweiterte HTML-Direkteditoren, keine juristische Beratung. Nur Text ändern; HTML-Tags, Klassen, Styles und Scripts nicht verändern. Wenn Sie unsicher sind, Änderung über Conan statt im Direkteditor vornehmen. Die vorhandenen Rechtstexte wurden bei der Einrichtung nicht verändert.
 
-Jeder Eintrag benötigt `datum`, `titel`, `ort`. Titel und Ort sind nicht leere Texte.
-`datum` ist ein echtes Kalenderdatum in `JJJJ-MM-TT` (Jahre 0100–9999, inklusive Schaltjahrprüfung).
-Optional: `uhrzeit` als `HH:MM` (00:00–23:59), `link` als absolute HTTP-/HTTPS-URL ohne Zugangsdaten, Leer-/Steuerzeichen oder Backslashes. Optionale Felder dürfen fehlen oder `""` sein; `null` ist ungültig.
-Die Reihenfolge der bisherigen Darstellung und automatische Zuordnung vergangener Termine bleiben erhalten.
+## Bilder, Videos und Audio
 
-### Repertoire
+Zuerst Datei hochladen/auswählen, dann den Inhaltseintrag speichern. Ein bloßer Upload fügt noch keine Kachel hinzu. Dateien werden mit zufälligen Namen abgelegt, um Namenskollisionen zu vermeiden.
 
-Jeder Eintrag benötigt nicht leere Texte `name`, `text` sowie `songs` als Liste nicht leerer Songtexte. `songs: []` ist erlaubt. Die Listenreihenfolge bestimmt die Darstellung.
+- Bilder: JPG, JPEG, PNG oder WebP. Webtauglich verkleinern; keine unbearbeiteten Riesenbilder oder HEIC-Dateien hochladen.
+- Video: webtaugliche MP4, für breite Browserunterstützung H.264/AAC. Möglichst unter 25 MB pro Datei bleiben. Es gibt **keine automatische Videokonvertierung** oder automatische Poster-Erzeugung. Ein Poster kann separat hochgeladen werden; ein Instagram-Link ist eine Alternative. Die viersekündige Ladegrenze betrifft JSON-Daten, nicht das Abspielen großer Videodateien.
+- Audio: MP3. Nur veröffentlichungsfähige Dateien mit geklärten Rechten verwenden.
+- Nur bereits öffentlich freigegebene Bilder/Videos verwenden; keine privaten Anfragen oder Rohmaterialien hochladen. Ein öffentlicher Git-Branch ist kein vertraulicher Speicher.
+- Beim Entfernen eines Eintrags muss die Mediendatei nicht gelöscht werden. Vor Löschen in der Medienverwaltung prüfen, ob Hero, Galerie, Steckbrief oder Video die Datei noch verwendet.
 
-## Lokal prüfen
+Die Quellen sind `content/termine.json`, `repertoire.json`, `galerie.json`, `videos.json`, `videogruppen.json`, `steckbriefe.json`, `hoerproben.json`, `kontakt.json` und `seite.json`. Pfade unter `assets/` bleiben relativ, damit GitHub Pages unter `/zweiklang/` funktioniert. Keine manuell gepflegte zweite JavaScript-Inhaltsquelle.
 
-Im Repository:
+## Sicherheit und Fehler
+
+Der Browser validiert Struktur, Datum/Uhrzeit, sichere Links und Medienpfade. Jede JSON-Datei wird unabhängig mit einem Zeitlimit geladen. Bei einem fehlerhaften Datenbereich erscheint eine Fehlermeldung, statt einen leeren Datenbestand vorzutäuschen. Feste Seitentexte bleiben bei Ladefehler als HTML-Fallback erhalten. Diese Laufzeitprüfungen ersetzen keine vollständige Formularvalidierung vor jedem Speichern.
+
+Bei einem 504-Speicherfehler Eingabe nicht durch Neuladen verlieren, kurz warten und erneut speichern. Danach auf GitHub bzw. der Seite kontrollieren. Nicht blind mehrfach neue Einträge erzeugen.
+
+## Technisch prüfen
 
 ```sh
 node --test
 python3 -m http.server 5500 --bind 127.0.0.1
 ```
 
-Danach `http://localhost:5500/` öffnen. Nicht per `file://`: Die JSON-Dateien werden per HTTP geladen. Keine Installation, kein Framework, kein Build-Schritt nötig. Die Tests verwenden ausschließlich Node-Standardbibliotheken (node:test und VM), keinen Netzwerkzugriff. Der unveränderliche Git-Commit `5a2e9d54898ab0cd59d385a3e8d21213c13050b5` dient als Migrationsreferenz, nicht als zweite gepflegte Inhaltsdatei.
+Die HTML-Vertragstests benötigen neben Node auch Python 3 (Standardbibliothek). Keine Paketinstallation und kein Build-Schritt. Seite per HTTP öffnen, nicht als `file://`.
 
-## Ladeverhalten
+Aktuelle Inhalte werden getrennt von historischen Migrationsreferenzen geprüft. Redaktionelle Änderungen sind gewollt und dürfen nicht zurückgesetzt werden, nur weil sie von der alten Seite abweichen. Ein zusätzlicher historischer Galerievergleich kann einmalig mit `PRUEFE_GALERIE_MIGRATION=1 node --test` ausgeführt werden, nicht als tägliche Inhaltsprüfung.
 
-`assets/js/inhalt-laden.js` lädt beide Dateien parallel und prüft jeden Bereich vollständig. `main.js` wartet auf das Ergebnis. Pro Datei gelten vier Sekunden Zeitlimit einschließlich Antwortverarbeitung; abgebrochene/späte Antworten überschreiben den Fehlerstatus nicht. Geladene Inhalte werden mit `cache: no-cache` revalidiert.
+Die neue CMS-Konfiguration, Medienreferenzen und Browserdarstellung wurden lokal geprüft. Authentifizierte Uploads/Speicherversuche der neu hinzugefügten Bereiche auf dem tatsächlichen Handy müssen gesondert bestätigt werden; die bereits bestätigte Terminpflege ist kein Nachweis für alle Uploadarten.
 
-Fehlende Dateien, Netzwerkfehler, ungültiges JSON, Schemafehler oder Timeout führen nur im betroffenen Bereich zu einer sichtbaren Ladefehlermeldung. Sie sind **keine** leere Terminliste. Andere Bereiche starten danach weiterhin. Ein gültiges `[]` erhält dagegen die bisherige Leerlisten-Darstellung: Termine mit bestehendem Hinweis, Repertoire ohne Gruppen. Erfolgreiche Ausgabe, Gestaltung und Medien bleiben unverändert.
+## Sicherung und Wiederherstellung
 
-Bei Änderungen an JavaScript weiterhin die betroffenen `?v=`-Kennungen in `index.html` erhöhen. Reine JSON-Inhaltsänderungen benötigen keine manuelle Cache-Kennung.
-
-## Noch offen
-
-Keine CMS-Anbindung oder mobile Redaktionsoberfläche in dieser Etappe. Anmeldung, zwei Redakteurskonten, Konfliktbehandlung und Veröffentlichungsablauf werden separat entschieden. Keine Zugangsdaten im Frontend ablegen. Die visuelle Browserabnahme übernimmt Conan; VM-Tests ersetzen sie nicht. Diese Etappe ist ausschließlich lokal und weder committet noch veröffentlicht.
+Vor dem Vollausbau wurde der komplette Git-Stand einschließlich Testbranch lokal gesichert und wiederhergestellt. Sicherungsort: `/home/hermes/backups/zweiklang/20261117-150142/`. Der Testbranch ist danach auf ausdrücklichen Wunsch entfernt worden. Sicherung auf demselben Server, kein Offsite-Backup. Kein neuer Hintergrunddienst und kein automatischer Zeitplan eingerichtet.
