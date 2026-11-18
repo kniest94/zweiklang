@@ -4,6 +4,14 @@
 
 Pages CMS im Browser öffnen, Projekt **zweiklang**, Branch **main**. Speichern schreibt direkt nach GitHub; nach der GitHub-Pages-Bereitstellung ist die Änderung öffentlich. Es gibt keinen Testbranch mehr. Keine zweite Freigabe erforderlich. Den zweiten Benutzer richten wir später ein.
 
+## Einfachere Navigation
+
+Direkt im Hauptmenü stehen Termine, Galerie, Videos, Repertoire, Steckbriefe und Hörproben. Unter **Texte & Bilder der Seite** sind drei kurze Formulare: Startbereich, Über uns und Anfrageformular. **Erweitert** bündelt seltene Überschriften/Hinweise, Terminfoto, Kontaktdaten, Video-Kategorien und die beiden HTML-Rechtstexteditoren.
+
+Bei Videos wird **Wer ist zu sehen?** ausgewählt, statt eine Gruppen-ID einzutippen. Die drei vorhandenen Kategorien sind fest zugeordnet; neue Kategorien gemeinsam mit Conan ergänzen, damit Auswahl und Zuordnung zusammenpassen. Bestehende kleine Galerievorschauen sind nur lesbar und bleiben erhalten; für ein neues Foto reichen Foto plus Beschreibung.
+
+Die fünf getrennten Seitentextformulare schreiben weiterhin in dieselbe `content/seite.json`. Dafür muss `settings.content.merge: true` aktiv bleiben: Es bewahrt alle anderen, gerade nicht bearbeiteten Texte. Nach dem ersten echten Speichern eines dieser Formulare den unveränderten Rest auf GitHub prüfen lassen. Nicht als ungeprüft vollständigen Handytest behandeln.
+
 ## Verfügbare Bereiche
 
 - **Termine:** Datum, Veranstaltung, Ort, optionale Uhrzeit und Link.
@@ -42,7 +50,7 @@ node --test
 python3 -m http.server 5500 --bind 127.0.0.1
 ```
 
-Die HTML-Vertragstests benötigen neben Node auch Python 3 (Standardbibliothek). Keine Paketinstallation und kein Build-Schritt. Seite per HTTP öffnen, nicht als `file://`.
+Die HTML-Vertragstests benötigen neben Node auch Python 3 (Standardbibliothek). Keine Paketinstallation und kein Build-Schritt für Website oder Node-Tests. Zusätzliche Bedienchecks: `python3 tests/cms_usability_test.py` mit lokalem PyYAML (Entwicklungsabhängigkeit in `requirements-dev.txt`). Die Checkliste [ABNAHME.md](ABNAHME.md) trennt technische Prüfungen von noch offenen echten Handytests. Seite per HTTP öffnen, nicht als `file://`.
 
 Aktuelle Inhalte werden getrennt von historischen Migrationsreferenzen geprüft. Redaktionelle Änderungen sind gewollt und dürfen nicht zurückgesetzt werden, nur weil sie von der alten Seite abweichen. Ein zusätzlicher historischer Galerievergleich kann einmalig mit `PRUEFE_GALERIE_MIGRATION=1 node --test` ausgeführt werden, nicht als tägliche Inhaltsprüfung.
 

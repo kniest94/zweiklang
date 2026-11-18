@@ -142,8 +142,13 @@ test('every migrated page text matches actual HTML exactly and every target pres
 
 test('page CMS form covers all text and media keys without touching legal content', () => {
   const data = JSON.parse(read('content/seite.json'));
-  const config = read('.pages.yml').split('  - name: seite\n')[1];
-  assert.ok(config, 'page form missing');
+  // Page editors are now separate navigation entries sharing one merged file.
+  const forms = read('.pages.yml').split(/^      - name: /m).slice(1)
+    .map((block) => block.split(/^  - name: /m)[0])
+    .filter((block) => /path: content\/seite.json/.test(block));
+  assert.equal(forms.length, 5, 'five short page editors expected');
+  for (const form of forms) assert.doesNotMatch(form, /impressum\.html|datenschutz\.html/);
+  const config = forms.join('\n');
   assert.match(config, /path: content\/seite.json/);
   for (const key of Object.keys(data.texte)) assert.ok(config.includes(`name: ${key}\n`), key);
   for (const key of ['hero', 'foto', 'alt', 'video', 'titel', 'label', 'vorschau', 'poster', 'videoPoster', 'terminbild', 'datei']) assert.ok(config.includes(`name: ${key}\n`), key);

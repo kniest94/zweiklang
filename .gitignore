@@ -9,3 +9,7 @@ vorschau/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Lokale Python-Testartefakte
+__pycache__/
+*.py[cod]

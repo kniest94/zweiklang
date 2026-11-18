@@ -1,5 +1,8 @@
-# Inhaltspflege für main: neun Datenformulare und zwei erweiterte Rechtstexteditoren.
-# Keine Layoutbearbeitung in den Datenformularen; keine automatische Medienkonvertierung.
+# Übersichtliche Handy-Redaktion; main veröffentlicht direkt.
+# Merge bewahrt nicht bearbeitete Seitentexte in den getrennten Formularen.
+settings:
+  content:
+    merge: true
 media:
   - name: galeriebilder
     label: Galeriebilder
@@ -41,7 +44,7 @@ content:
         label: Datum
         type: date
         required: true
-        default: ""
+        default: ''
         options:
           time: false
           format: yyyy-MM-dd
@@ -50,29 +53,138 @@ content:
         type: string
         required: true
         pattern:
-          regex: '\S'
+          regex: \S
           message: Bitte einen Veranstaltungstitel eingeben.
       - name: ort
         label: Ort
         type: string
         required: true
         pattern:
-          regex: '\S'
+          regex: \S
           message: Bitte einen Ort eingeben.
       - name: uhrzeit
         label: Uhrzeit (optional)
         type: string
-        description: 'Zum Beispiel 19:30. Leer lassen, wenn die Uhrzeit noch offen ist.'
+        description: Zum Beispiel 19:30. Leer lassen, wenn die Uhrzeit noch offen ist.
         pattern:
-          regex: '^$|^([01]\d|2[0-3]):[0-5]\d$'
+          regex: ^$|^([01]\d|2[0-3]):[0-5]\d$
           message: Bitte die Uhrzeit als HH:MM eingeben, zum Beispiel 19:30.
       - name: link
         label: Veranstaltungslink (optional)
         type: string
         description: Vollständige öffentliche Internetadresse, keine internen Angaben.
         pattern:
-          regex: '^$|^https?://[^\s@\\]+$'
+          regex: ^$|^https?://[^\s@\\]+$
           message: Bitte eine vollständige http://- oder https://-Adresse ohne Leerzeichen und Zugangsdaten eingeben.
+  - name: galerie
+    label: Galerie
+    type: file
+    path: content/galerie.json
+    format: json
+    list: true
+    operations:
+      create: false
+      rename: false
+      delete: false
+    fields:
+      - name: gross
+        label: Foto hinzufügen
+        type: image
+        required: true
+        description: Ein Bild auswählen oder hochladen. Ein zweites Bild ist nicht nötig.
+        options:
+          media: galeriebilder
+      - name: alt
+        label: Was ist auf dem Foto zu sehen?
+        type: text
+        required: true
+        pattern:
+          regex: \S
+          message: Bitte beschreiben, was auf dem Bild zu sehen ist.
+        description: Kurze Beschreibung für Menschen, die das Foto nicht sehen können.
+      - name: klein
+        label: Vorhandene kleine Vorschau (wird beibehalten)
+        type: image
+        required: false
+        options:
+          media: galeriebilder
+        readonly: true
+        description: 'Nicht erforderlich: Ein Foto und die Beschreibung reichen aus. Bestehende Vorschauen bleiben
+          erhalten.'
+  - name: videos
+    label: Videos
+    type: file
+    path: content/videos.json
+    format: json
+    list: true
+    operations:
+      create: false
+      rename: false
+      delete: false
+    fields:
+      - name: titel
+        label: Titel
+        type: string
+        required: true
+        pattern:
+          regex: \S
+          message: Bitte einen Titel eingeben.
+      - name: gruppe
+        label: Wer ist zu sehen?
+        type: select
+        required: true
+        description: Einfach auswählen – keine technische Kennung eingeben.
+        options:
+          values:
+            - name: duo
+              label: Zu zweit
+            - name: saskia
+              label: Saskia
+            - name: nicola
+              label: Nicola
+      - name: typ
+        label: Wie möchten Sie das Video zeigen?
+        type: select
+        required: true
+        default: mp4
+        options:
+          values:
+            - name: mp4
+              label: Videodatei hochladen (MP4)
+            - name: instagram
+              label: Auf Instagram verlinken
+      - name: datei
+        label: Video auswählen oder hochladen
+        type: file
+        required: false
+        description: 'Nur für Videodatei: MP4 auswählen, möglichst unter 25 MB. Bei Instagram leer lassen.'
+        options:
+          media: videomedien
+          extensions: [mp4]
+          rename: random
+      - name: link
+        label: Instagram-Link
+        type: string
+        description: 'Nur für Instagram: Link zum Beitrag einfügen. Bei einer Videodatei leer lassen.'
+        pattern:
+          regex: ^$|^https://(www\.)?instagram\.com/[^\s@\\]*$
+          message: Bitte einen vollständigen Instagram-HTTPS-Link eingeben.
+      - name: poster
+        label: Vorschaubild (optional)
+        type: image
+        required: false
+        options:
+          media: videomedien
+          extensions: [jpg, jpeg, png, webp]
+          rename: random
+        description: 'Optional: Das Bild, das vor dem Abspielen angezeigt wird.'
+      - name: dauer
+        label: Dauer (optional)
+        type: string
+        description: Minuten:Sekunden, zum Beispiel 0:42.
+        pattern:
+          regex: ^$|^\d+:[0-5]\d$
+          message: Bitte M:SS eingeben.
   - name: repertoire
     label: Repertoire
     type: file
@@ -89,14 +201,14 @@ content:
         type: string
         required: true
         pattern:
-          regex: '\S'
+          regex: \S
           message: Bitte eine Kategorie eingeben.
       - name: text
         label: Beschreibung
         type: text
         required: true
         pattern:
-          regex: '\S'
+          regex: \S
           message: Bitte eine Beschreibung eingeben.
       - name: songs
         label: Songs
@@ -104,12 +216,12 @@ content:
         list: true
         description: Ein Song pro Eintrag, zum Beispiel Titel – Interpret. Eine leere Songliste ist erlaubt.
         pattern:
-          regex: '\S'
+          regex: \S
           message: Bitte einen Songtitel eingeben oder den leeren Eintrag entfernen.
-  - name: galerie
-    label: Galerie
+  - name: steckbriefe
+    label: Steckbriefe
     type: file
-    path: content/galerie.json
+    path: content/steckbriefe.json
     format: json
     list: true
     operations:
@@ -117,115 +229,13 @@ content:
       rename: false
       delete: false
     fields:
-      - name: gross
-        label: Bild
-        type: image
-        required: true
-        description: Ein Bild auswählen oder hochladen. Ein zweites Bild ist nicht nötig.
-        options:
-          media: galeriebilder
-      - name: klein
-        label: Kleines Vorschaubild (optional)
-        type: image
-        required: false
-        options:
-          media: galeriebilder
-      - name: alt
-        label: Bildbeschreibung (Alttext)
-        type: text
-        required: true
-        pattern:
-          regex: '\S'
-          message: Bitte beschreiben, was auf dem Bild zu sehen ist.
-  - name: videos
-    label: Videos
-    type: file
-    path: content/videos.json
-    format: json
-    list: true
-    operations: {create: false, rename: false, delete: false}
-    fields:
-      - name: gruppe
-        label: Gruppen-ID
-        type: string
-        required: true
-        description: Muss einer ID aus Videogruppen entsprechen.
-        pattern:
-          regex: '^[a-z0-9_-]+$'
-          message: Nur Kleinbuchstaben, Zahlen, Bindestrich und Unterstrich.
-      - name: typ
-        label: Videoart
-        type: select
-        required: true
-        default: mp4
-        options:
-          values: [mp4, instagram]
-      - name: titel
-        label: Titel
-        type: string
-        required: true
-        pattern: {regex: '\S', message: Bitte einen Titel eingeben.}
-      - name: datei
-        label: MP4-Datei
-        type: file
-        required: false
-        description: Für Videoart mp4 erforderlich; für Instagram leer lassen.
-        options:
-          media: videomedien
-          extensions: [mp4]
-          rename: random
-      - name: poster
-        label: Vorschaubild (optional)
-        type: image
-        required: false
-        options:
-          media: videomedien
-          extensions: [jpg, jpeg, png, webp]
-          rename: random
-      - name: link
-        label: Instagram-Link
-        type: string
-        description: Für Videoart instagram erforderlich; vollständiger HTTPS-Link zu instagram.com.
-        pattern:
-          regex: '^$|^https://(www\.)?instagram\.com/[^\s@\\]*$'
-          message: Bitte einen vollständigen Instagram-HTTPS-Link eingeben.
-      - name: dauer
-        label: Dauer (optional)
-        type: string
-        description: 'Minuten:Sekunden, zum Beispiel 0:42.'
-        pattern: {regex: '^$|^\d+:[0-5]\d$', message: 'Bitte M:SS eingeben.'}
-  - name: videogruppen
-    label: Videogruppen
-    type: file
-    path: content/videogruppen.json
-    format: json
-    list: true
-    operations: {create: false, rename: false, delete: false}
-    fields:
-      - name: id
-        label: Eindeutige Gruppen-ID
-        type: string
-        required: true
-        description: Nicht doppelt vergeben. Bei Änderung auch die Videos anpassen.
-        pattern: {regex: '^[a-z0-9_-]+$', message: Nur Kleinbuchstaben, Zahlen, Bindestrich und Unterstrich.}
-      - name: name
-        label: Anzeigename
-        type: string
-        required: true
-        pattern: {regex: '\S', message: Bitte einen Namen eingeben.}
-  - name: steckbriefe
-    label: Steckbriefe
-    type: file
-    path: content/steckbriefe.json
-    format: json
-    list: true
-    operations: {create: false, rename: false, delete: false}
-    fields:
       - name: name
         label: Name
         type: string
         required: true
-        pattern: {regex: '\S', message: Bitte einen Namen eingeben.}
+        pattern:
+          regex: \S
+          message: Bitte einen Namen eingeben.
       - name: bild
         label: Foto oder Steckbrief (optional)
         type: image
@@ -240,20 +250,27 @@ content:
         type: text
         required: false
         description: Bei ausgewähltem Bild erforderlich, sonst optional.
-        pattern: {regex: '^$|\S', message: Bitte Bild und enthaltenen Text beschreiben.}
+        pattern:
+          regex: ^$|\S
+          message: Bitte Bild und enthaltenen Text beschreiben.
   - name: hoerproben
     label: Hörproben
     type: file
     path: content/hoerproben.json
     format: json
     list: true
-    operations: {create: false, rename: false, delete: false}
+    operations:
+      create: false
+      rename: false
+      delete: false
     fields:
       - name: titel
         label: Titel
         type: string
         required: true
-        pattern: {regex: '\S', message: Bitte einen Titel eingeben.}
+        pattern:
+          regex: \S
+          message: Bitte einen Titel eingeben.
       - name: datei
         label: MP3-Datei
         type: file
@@ -262,275 +279,406 @@ content:
           media: audio
           extensions: [mp3]
           rename: random
-  - name: kontakt
-    label: Kontakt
-    type: file
-    path: content/kontakt.json
-    format: json
-    operations: {create: false, rename: false, delete: false}
-    fields:
-      - name: mail
-        label: E-Mail
-        type: string
-        required: true
-        pattern:
-          regex: '^[a-zA-Z0-9.!#$%&''*+/=_`{|}~-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+$'
-          message: Bitte eine E-Mail-Adresse ohne URL-Zusätze eingeben.
-      - name: telefonAnzeige
-        label: Sichtbare Telefonnummer
-        type: string
-        required: true
-        pattern: {regex: '^[+\d][\d *()-]*$', message: Bitte eine Telefonnummer eingeben.}
-      - name: telefonLink
-        label: Telefon-Linkwert
-        type: string
-        required: true
-        description: Bestehende maskierte Werte nicht automatisch ersetzen oder aus anderen Feldern ableiten.
-        pattern: {regex: '^\+?[\d*][\d* ()-]*$', message: Nur Telefonzeichen und vorhandene Maskierung erlaubt.}
-      - name: whatsapp
-        label: WhatsApp-Nummer
-        type: string
-        required: true
-        description: Internationale Nummer nur mit Ziffern, ohne Pluszeichen.
-        pattern: {regex: '^\d{6,15}$', message: Bitte 6 bis 15 Ziffern eingeben.}
-      - name: instagram
-        label: Instagram-Benutzername
-        type: string
-        required: true
-        description: Ohne @ und ohne URL.
-        pattern: {regex: '^[a-zA-Z0-9_][a-zA-Z0-9_.]{0,29}$', message: Bitte einen gültigen Benutzernamen eingeben.}
-  # Erweiterte Direkteditoren: nur Text ändern, HTML-Tags und Klassen erhalten.
-  - name: impressum
-    label: Impressum (HTML – nur Text ändern)
-    type: file
-    path: impressum.html
-    format: code
-    operations: {create: false, rename: false, delete: false}
-  - name: datenschutz
-    label: Datenschutz (HTML – nur Text ändern)
-    type: file
-    path: datenschutz.html
-    format: code
-    operations: {create: false, rename: false, delete: false}
-  - name: seite
-    label: Seitentexte und Aufmacher
-    type: file
-    path: content/seite.json
-    format: json
-    operations: {create: false, rename: false, delete: false}
-    fields:
-      - name: texte
-        label: Redaktionelle Texte (ohne HTML)
-        type: object
+  - name: seitentexte
+    label: Texte & Bilder der Seite
+    type: group
+    items:
+      - name: seite
+        label: Startbereich – Foto und Einstieg
+        type: file
+        path: content/seite.json
+        format: json
+        operations:
+          create: false
+          rename: false
+          delete: false
         fields:
-          - name: heroSlogan
-            label: Hero – Slogan
-            type: string
-            required: true
-          - name: heroLead
-            label: Hero – Einleitung
-            type: text
-            required: true
-          - name: heroWhatsapp
-            label: Hero – WhatsApp-Schaltfläche
-            type: string
-            required: true
-          - name: heroVideos
-            label: Hero – Video-Schaltfläche
-            type: string
-            required: true
-          - name: heroNotiz
-            label: Hero – handschriftliche Notiz
-            type: string
-            required: true
-          - name: ueberTitel
-            label: Über uns – Überschrift
-            type: string
-            required: true
-          - name: ueberLead
-            label: Über uns – Einleitung
-            type: text
-            required: true
-          - name: ueberText1
-            label: Über uns – erster Absatz
-            type: text
-            required: true
-          - name: ueberText2
-            label: Über uns – zweiter Absatz
-            type: text
-            required: true
-          - name: ueberGruss
-            label: Über uns – Gruß
-            type: string
-            required: true
-          - name: steckbriefHinweis
-            label: Steckbriefe – Hinweis
-            type: string
-            required: true
-          - name: motto1
-            label: Motto – erstes Wort
-            type: string
-            required: true
-          - name: motto2
-            label: Motto – zweites Wort
-            type: string
-            required: true
-          - name: motto3
-            label: Motto – drittes Wort
-            type: string
-            required: true
-          - name: videosTitel
-            label: Videos – Überschrift
-            type: string
-            required: true
-          - name: videosIntro
-            label: Videos – Einleitung
-            type: text
-            required: true
-          - name: hoerprobenTitel
-            label: Hörproben – Überschrift
-            type: string
-            required: true
-          - name: galerieTitel
-            label: Galerie – Überschrift
-            type: string
-            required: true
-          - name: galerieInstagram
-            label: Galerie – Instagram-Schaltfläche
-            type: string
-            required: true
-          - name: galerieHinweis
-            label: Galerie – Hinweis
-            type: string
-            required: true
-          - name: repertoireTitel
-            label: Repertoire – Überschrift
-            type: string
-            required: true
-          - name: repertoireHinweis
-            label: Repertoire – Hinweis vor dem Anfragelink
-            type: text
-            required: true
-          - name: repertoireAnfrage
-            label: Repertoire – Text des Anfragelinks
-            type: string
-            required: true
-          - name: termineTitel
-            label: Termine – Überschrift
-            type: string
-            required: true
-          - name: termineKommend
-            label: Termine – kommende Auftritte
-            type: string
-            required: true
-          - name: termineVergangen
-            label: Termine – vergangene Auftritte
-            type: string
-            required: true
-          - name: terminBildunterschrift
-            label: Termine – Bildunterschrift
-            type: string
-            required: true
-          - name: anfrageTitel
-            label: Anfrage – Überschrift
-            type: string
-            required: true
-          - name: anfrageIntro
-            label: Anfrage – Einleitung
-            type: text
-            required: true
-          - name: anfrageAnlass
-            label: Anfrage – Anlassüberschrift
-            type: string
-            required: true
-          - name: anfrageDatum
-            label: Anfrage – Datumsfeld
-            type: string
-            required: true
-          - name: anfrageOrt
-            label: Anfrage – Ortsfeld
-            type: string
-            required: true
-          - name: anfrageName
-            label: Anfrage – Namensfeld
-            type: string
-            required: true
-          - name: anfrageNachricht
-            label: Anfrage – Nachrichtenfeld
-            type: string
-            required: true
-          - name: anfrageOptional
-            label: Anfrage – Optionalhinweis
-            type: string
-            required: true
-          - name: anfrageWhatsapp
-            label: Anfrage – WhatsApp-Schaltfläche
-            type: string
-            required: true
-          - name: anfrageMail
-            label: Anfrage – Mail-Schaltfläche
-            type: string
-            required: true
-          - name: anfrageHinweis
-            label: Anfrage – Datenschutzhinweis
-            type: text
-            required: true
-          - name: kontaktTitel
-            label: Kontakt – Überschrift
-            type: string
-            required: true
-      - name: hero
-        label: Hero – Foto und Clip
-        type: object
+          - name: texte
+            label: Texte bearbeiten
+            type: object
+            fields:
+              - name: heroSlogan
+                label: Startbereich – Slogan
+                type: string
+                required: true
+              - name: heroLead
+                label: Startbereich – Einleitung
+                type: text
+                required: true
+              - name: heroWhatsapp
+                label: Startbereich – WhatsApp-Schaltfläche
+                type: string
+                required: true
+              - name: heroVideos
+                label: Startbereich – Video-Schaltfläche
+                type: string
+                required: true
+              - name: heroNotiz
+                label: Startbereich – handschriftliche Notiz
+                type: string
+                required: true
+          - name: hero
+            label: Foto und Live-Clip im Startbereich
+            type: object
+            fields:
+              - name: foto
+                label: Foto
+                type: image
+                required: true
+                options:
+                  media: fotos
+                  extensions: [jpg, jpeg, png, webp]
+                  rename: random
+              - name: alt
+                label: Fotobeschreibung
+                type: text
+                required: true
+              - name: video
+                label: Abspielbarer Clip mit Ton (MP4)
+                type: file
+                required: true
+                description: Webtaugliches MP4 verwenden, möglichst unter 25 MB. Handydateien gegebenenfalls vorab
+                  konvertieren; keine automatische Konvertierung.
+                options:
+                  media: videomedien
+                  extensions: [mp4]
+                  rename: random
+              - name: videoPoster
+                label: Vorschaubild des abspielbaren Clips
+                type: image
+                required: true
+                options:
+                  media: videomedien
+                  extensions: [jpg, jpeg, png, webp]
+                  rename: random
+              - name: titel
+                label: Titel des Clips
+                type: string
+                required: true
+              - name: label
+                label: Barrierefreie Beschreibung der Clip-Schaltfläche
+                type: text
+                required: true
+              - name: vorschau
+                label: Stumme Schleifenvorschau (MP4)
+                type: file
+                required: true
+                options:
+                  media: videomedien
+                  extensions: [mp4]
+                  rename: random
+              - name: poster
+                label: Standbild der Schleifenvorschau
+                type: image
+                required: true
+                options:
+                  media: videomedien
+                  extensions: [jpg, jpeg, png, webp]
+                  rename: random
+      - name: ueberuns
+        label: Über uns
+        type: file
+        path: content/seite.json
+        format: json
+        operations:
+          create: false
+          rename: false
+          delete: false
         fields:
-          - name: foto
-            label: Foto
-            type: image
-            required: true
-            options: {media: fotos, extensions: [jpg, jpeg, png, webp], rename: random}
-          - name: alt
-            label: Fotobeschreibung
-            type: text
-            required: true
-          - name: video
-            label: Abspielbarer Clip mit Ton (MP4)
-            type: file
-            required: true
-            description: Webtaugliches MP4 verwenden, möglichst unter 25 MB. Handydateien gegebenenfalls vorab konvertieren; keine automatische Konvertierung.
-            options: {media: videomedien, extensions: [mp4], rename: random}
-          - name: videoPoster
-            label: Vorschaubild des abspielbaren Clips
-            type: image
-            required: true
-            options: {media: videomedien, extensions: [jpg, jpeg, png, webp], rename: random}
-          - name: titel
-            label: Titel des Clips
-            type: string
-            required: true
-          - name: label
-            label: Barrierefreie Beschreibung der Clip-Schaltfläche
-            type: text
-            required: true
-          - name: vorschau
-            label: Stumme Schleifenvorschau (MP4)
-            type: file
-            required: true
-            options: {media: videomedien, extensions: [mp4], rename: random}
-          - name: poster
-            label: Standbild der Schleifenvorschau
-            type: image
-            required: true
-            options: {media: videomedien, extensions: [jpg, jpeg, png, webp], rename: random}
+          - name: texte
+            label: Texte bearbeiten
+            type: object
+            fields:
+              - name: ueberTitel
+                label: Über uns – Überschrift
+                type: string
+                required: true
+              - name: ueberLead
+                label: Über uns – Einleitung
+                type: text
+                required: true
+              - name: ueberText1
+                label: Über uns – erster Absatz
+                type: text
+                required: true
+              - name: ueberText2
+                label: Über uns – zweiter Absatz
+                type: text
+                required: true
+              - name: ueberGruss
+                label: Über uns – Gruß
+                type: string
+                required: true
+              - name: steckbriefHinweis
+                label: Steckbriefe – Hinweis
+                type: string
+                required: true
+      - name: anfrage
+        label: Anfrageformular
+        type: file
+        path: content/seite.json
+        format: json
+        operations:
+          create: false
+          rename: false
+          delete: false
+        fields:
+          - name: texte
+            label: Texte bearbeiten
+            type: object
+            fields:
+              - name: anfrageTitel
+                label: Anfrage – Überschrift
+                type: string
+                required: true
+              - name: anfrageIntro
+                label: Anfrage – Einleitung
+                type: text
+                required: true
+              - name: anfrageAnlass
+                label: Anfrage – Anlassüberschrift
+                type: string
+                required: true
+              - name: anfrageDatum
+                label: Anfrage – Datumsfeld
+                type: string
+                required: true
+              - name: anfrageOrt
+                label: Anfrage – Ortsfeld
+                type: string
+                required: true
+              - name: anfrageName
+                label: Anfrage – Namensfeld
+                type: string
+                required: true
+              - name: anfrageNachricht
+                label: Anfrage – Nachrichtenfeld
+                type: string
+                required: true
+              - name: anfrageOptional
+                label: Anfrage – Optionalhinweis
+                type: string
+                required: true
+              - name: anfrageWhatsapp
+                label: Anfrage – WhatsApp-Schaltfläche
+                type: string
+                required: true
+              - name: anfrageMail
+                label: Anfrage – Mail-Schaltfläche
+                type: string
+                required: true
+              - name: anfrageHinweis
+                label: Anfrage – Datenschutzhinweis
+                type: text
+                required: true
+  - name: erweitert
+    label: Erweitert – selten benötigt
+    type: group
+    items:
+      - name: seitenbeschriftungen
+        label: Überschriften und Hinweise
+        type: file
+        path: content/seite.json
+        format: json
+        operations:
+          create: false
+          rename: false
+          delete: false
+        fields:
+          - name: texte
+            label: Texte bearbeiten
+            type: object
+            fields:
+              - name: motto1
+                label: Motto – erstes Wort
+                type: string
+                required: true
+              - name: motto2
+                label: Motto – zweites Wort
+                type: string
+                required: true
+              - name: motto3
+                label: Motto – drittes Wort
+                type: string
+                required: true
+              - name: videosTitel
+                label: Videos – Überschrift
+                type: string
+                required: true
+              - name: videosIntro
+                label: Videos – Einleitung
+                type: text
+                required: true
+              - name: hoerprobenTitel
+                label: Hörproben – Überschrift
+                type: string
+                required: true
+              - name: galerieTitel
+                label: Galerie – Überschrift
+                type: string
+                required: true
+              - name: galerieInstagram
+                label: Galerie – Instagram-Schaltfläche
+                type: string
+                required: true
+              - name: galerieHinweis
+                label: Galerie – Hinweis
+                type: string
+                required: true
+              - name: repertoireTitel
+                label: Repertoire – Überschrift
+                type: string
+                required: true
+              - name: repertoireHinweis
+                label: Repertoire – Hinweis vor dem Anfragelink
+                type: text
+                required: true
+              - name: repertoireAnfrage
+                label: Repertoire – Text des Anfragelinks
+                type: string
+                required: true
+              - name: termineTitel
+                label: Termine – Überschrift
+                type: string
+                required: true
+              - name: termineKommend
+                label: Termine – kommende Auftritte
+                type: string
+                required: true
+              - name: termineVergangen
+                label: Termine – vergangene Auftritte
+                type: string
+                required: true
+              - name: kontaktTitel
+                label: Kontakt – Überschrift
+                type: string
+                required: true
       - name: terminbild
-        label: Terminfoto
-        type: object
+        label: Foto bei den Terminen
+        type: file
+        path: content/seite.json
+        format: json
+        operations:
+          create: false
+          rename: false
+          delete: false
         fields:
-          - name: datei
-            label: Bild
-            type: image
+          - name: texte
+            label: Texte bearbeiten
+            type: object
+            fields:
+              - name: terminBildunterschrift
+                label: Termine – Bildunterschrift
+                type: string
+                required: true
+          - name: terminbild
+            label: Terminfoto
+            type: object
+            fields:
+              - name: datei
+                label: Bild
+                type: image
+                required: true
+                options:
+                  media: fotos
+                  extensions: [jpg, jpeg, png, webp]
+                  rename: random
+              - name: alt
+                label: Bildbeschreibung
+                type: text
+                required: true
+      - name: kontakt
+        label: Kontaktdaten
+        type: file
+        path: content/kontakt.json
+        format: json
+        operations:
+          create: false
+          rename: false
+          delete: false
+        fields:
+          - name: mail
+            label: E-Mail
+            type: string
             required: true
-            options: {media: fotos, extensions: [jpg, jpeg, png, webp], rename: random}
-          - name: alt
-            label: Bildbeschreibung
-            type: text
+            pattern:
+              regex: ^[a-zA-Z0-9.!#$%&'*+/=_`{|}~-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+$
+              message: Bitte eine E-Mail-Adresse ohne URL-Zusätze eingeben.
+          - name: telefonAnzeige
+            label: Sichtbare Telefonnummer
+            type: string
             required: true
+            pattern:
+              regex: ^[+\d][\d *()-]*$
+              message: Bitte eine Telefonnummer eingeben.
+          - name: telefonLink
+            label: Telefon-Linkwert
+            type: string
+            required: true
+            description: Bestehende maskierte Werte nicht automatisch ersetzen oder aus anderen Feldern ableiten.
+            pattern:
+              regex: ^\+?[\d*][\d* ()-]*$
+              message: Nur Telefonzeichen und vorhandene Maskierung erlaubt.
+          - name: whatsapp
+            label: WhatsApp-Nummer
+            type: string
+            required: true
+            description: Internationale Nummer nur mit Ziffern, ohne Pluszeichen.
+            pattern:
+              regex: ^\d{6,15}$
+              message: Bitte 6 bis 15 Ziffern eingeben.
+          - name: instagram
+            label: Instagram-Benutzername
+            type: string
+            required: true
+            description: Ohne @ und ohne URL.
+            pattern:
+              regex: ^[a-zA-Z0-9_][a-zA-Z0-9_.]{0,29}$
+              message: Bitte einen gültigen Benutzernamen eingeben.
+      - name: videogruppen
+        label: Video-Kategorien (selten ändern)
+        type: file
+        path: content/videogruppen.json
+        format: json
+        list: true
+        operations:
+          create: false
+          rename: false
+          delete: false
+        fields:
+          - name: id
+            label: Eindeutige Gruppen-ID
+            type: string
+            required: true
+            description: Technische Zuordnung – nicht im Alltag ändern. Neue Kategorien mit Conan ergänzen.
+            pattern:
+              regex: ^[a-z0-9_-]+$
+              message: Nur Kleinbuchstaben
+              Zahlen: null
+              Bindestrich und Unterstrich.: null
+            readonly: true
+          - name: name
+            label: Anzeigename
+            type: string
+            required: true
+            pattern:
+              regex: \S
+              message: Bitte einen Namen eingeben.
+      - name: impressum
+        label: Impressum (HTML – nur Text ändern)
+        type: file
+        path: impressum.html
+        format: code
+        operations:
+          create: false
+          rename: false
+          delete: false
+      - name: datenschutz
+        label: Datenschutz (HTML – nur Text ändern)
+        type: file
+        path: datenschutz.html
+        format: code
+        operations:
+          create: false
+          rename: false
+          delete: false

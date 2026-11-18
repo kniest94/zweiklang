@@ -29,7 +29,9 @@ node --test
 python3 -m http.server 5500 --bind 127.0.0.1
 ```
 
-Danach `http://localhost:5500/` öffnen; nicht per `file://`. Die HTML-Vertragstests benötigen Python 3 zusätzlich zu Node, jeweils ohne externe Pakete.
+Danach `http://localhost:5500/` öffnen; nicht per `file://`. Die HTML-Vertragstests benötigen Python 3 zusätzlich zu Node, jeweils ohne externe Pakete. Die zusätzlichen CMS-Bedienchecks laufen mit `python3 tests/cms_usability_test.py`; dafür ist PyYAML aus `requirements-dev.txt` erforderlich. Website und reguläre Node-Tests benötigen keine zusätzliche Paketinstallation.
+
+Die Redaktion ist nach Häufigkeit geordnet; Seitentexte sind in kurze Formulare aufgeteilt und seltene Einstellungen stehen unter „Erweitert“. `settings.content.merge: true` erhält bei diesen Teilformularen die übrigen Seitentexte. Offene echte Handytests stehen in [docs/ABNAHME.md](docs/ABNAHME.md).
 
 Nur auf main veröffentlichen. Vor technischen Änderungen eine geprüfte Sicherung anlegen. Änderungen zunächst lokal prüfen; keine direkte Änderung der Live-Dateien ohne Tests. Normale redaktionelle JSON-Änderungen benötigen keine neue `?v=`-Kennung. Bei Änderungen an JavaScript/CSS die Skript-/Stylesheet-Versionen in den einbindenden HTML-Seiten aktualisieren.
 
