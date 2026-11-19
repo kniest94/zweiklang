@@ -5,6 +5,11 @@
     "ort": "Ski- & Wanderhütte, Kirrberg"
   },
   {
+    "datum": "2026-12-04",
+    "titel": "Private Weihnachtsfeier",
+    "ort": "Kirrberg"
+  },
+  {
     "datum": "2026-12-11",
     "titel": "Nikolausparty",
     "ort": "Marktgässje, Homburg"
@@ -13,5 +18,20 @@
     "datum": "2026-12-19",
     "titel": "Weihnachtsmarkt",
     "ort": "Blieskastel"
+  },
+  {
+    "datum": "2027-02-27",
+    "titel": "Ski- & Wanderhütte",
+    "ort": "Kirrberg"
+  },
+  {
+    "datum": "2027-06-26",
+    "titel": "Euly‘s Seehaus",
+    "ort": "Ohmbachsee (Gries)"
+  },
+  {
+    "datum": "2027-08-21",
+    "titel": "Privater Auftritt",
+    "ort": "Homburg"
   }
 ]
